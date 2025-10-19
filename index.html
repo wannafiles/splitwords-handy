@@ -27,15 +27,16 @@
             transition: all 0.2s ease-in-out;
             cursor: pointer;
             user-select: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-width: 4px; 
+            /* gap削減に合わせてshadowを微調整 */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); 
+            border-width: 3px; /* borderも微調整 */
             border-style: solid; 
             border-color: transparent;
         }
         
         /* 選択状態のスタイル */
         .selected { 
-            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.7); 
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.7); 
             border-color: rgb(79, 70, 229) !important; /* indigo-600 */
         }
         
@@ -45,25 +46,25 @@
         /* ターゲットスロットのスタイル調整 */
         .target-slot {
             transition: background-color 0.2s;
-            /* PC向け 5rem からモバイル向け 3rem に調整 */
+            /* モバイル向け 3rem に据え置き (h-16に合わせて再確認) */
             line-height: 3rem; 
             font-weight: 900; 
         }
         
         /* 最終メッセージのフォントサイズ調整 */
         .final-message {
-            padding: 1rem;
-            margin-top: 1rem;
-            font-size: 1.25rem; /* 1.5rem から調整 */
+            padding: 0.75rem; /* paddingも微減 */
+            margin-top: 0.75rem;
+            font-size: 1.15rem; 
             font-weight: 700;
             text-align: center;
         }
 
-        .negative-mt-4 { margin-top: -1rem; } 
+        .negative-mt-4 { margin-top: -0.75rem; } /* 垂直方向の圧縮 */
         
         /* Tema List specific */
         .theme-item {
-            border-left-width: 8px;
+            border-left-width: 6px; /* borderも微減 */
             border-left-style: solid;
             border-left-color: #4f46e5;
         }
@@ -75,29 +76,27 @@
         }
     </style>
 </head>
-<body class="w-screen h-screen overflow-hidden bg-gray-50 text-gray-800 antialiased p-2 sm:p-4 md:p-8 flex items-start justify-center">
+<body class="w-screen h-screen overflow-hidden bg-gray-50 text-gray-800 antialiased p-2 sm:p-4 flex items-start justify-center">
 
-    <div id="game-container" class="w-full h-full mx-auto bg-white p-4 sm:p-6 md:p-10 rounded-3xl shadow-2xl border border-gray-100 flex flex-col space-y-4 max-w-7xl overflow-y-auto">
+    <div id="game-container" class="w-full h-full mx-auto bg-white p-4 sm:p-6 md:p-10 rounded-3xl shadow-2xl border border-gray-100 flex flex-col space-y-3 max-w-7xl overflow-y-auto">
         
         <div id="control-area" class="flex flex-col items-center justify-center">
-            <h1 id="game-title" class="text-4xl sm:text-5xl md:text-6xl font-black text-indigo-800 mb-6 text-center">Word Split Challenge</h1>
+            <h1 id="game-title" class="text-4xl sm:text-5xl md:text-6xl font-black text-indigo-800 mb-4 text-center">Word Split Challenge</h1>
         </div>
         
-        <div id="home-view" class="space-y-6">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-700">テーマ選択 (ローカル保存)</h2>
+        <div id="home-view" class="space-y-4"> <h2 class="text-2xl sm:text-3xl font-bold text-gray-700">テーマ選択 (ローカル保存)</h2>
 
-            <div id="theme-list" class="flex flex-col space-y-3 p-4 bg-gray-50 rounded-xl min-h-40 shadow-inner">
+            <div id="theme-list" class="flex flex-col space-y-2 p-3 bg-gray-50 rounded-xl min-h-40 shadow-inner"> 
                 <p class="text-gray-500 text-center py-10" id="loading-message">テーマをロード中...</p>
             </div>
             
-            <div id="question-count-setting" class="p-4 bg-indigo-50 rounded-xl shadow-inner border-t-4 border-indigo-400">
+            <div id="question-count-setting" class="p-3 bg-indigo-50 rounded-xl shadow-inner border-t-4 border-indigo-400">
                 <label for="question-limit" class="block text-lg font-bold text-gray-700">出題数 (問題)</label>
                 <input type="number" id="question-limit" min="5" value="10" class="w-full p-3 border border-gray-300 rounded-lg text-xl sm:text-2xl focus:ring-indigo-500 focus:border-indigo-500">
                 <p id="max-question-info" class="text-sm text-gray-500 mt-1">最大出題数: 0 (選択したテーマに依存)</p>
             </div>
 
-            <div class="flex flex-col space-y-4">
-                <button id="start-selected-theme-button" class="px-6 py-3 bg-green-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-green-700 transition duration-150" disabled>
+            <div class="flex flex-col space-y-3"> <button id="start-selected-theme-button" class="px-6 py-3 bg-green-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-green-700 transition duration-150" disabled>
                     選択したテーマでスタート
                 </button>
                 <button id="new-theme-button" class="px-6 py-3 bg-indigo-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-indigo-700 transition duration-150">
@@ -108,24 +107,19 @@
              <p class="text-sm text-gray-500 pt-4 text-center">このデータはあなたのブラウザに保存されます。</p>
         </div>
 
-        <div id="theme-manager-view" class="space-y-6" style="display: none;">
-            <h2 id="manager-title" class="text-2xl sm:text-3xl font-bold text-gray-700">新しいテーマを作成</h2>
+        <div id="theme-manager-view" class="space-y-4" style="display: none;"> <h2 id="manager-title" class="text-2xl sm:text-3xl font-bold text-gray-700">新しいテーマを作成</h2>
             
-            <div class="space-y-4 p-4 bg-gray-100 rounded-xl shadow-lg">
-
-                <label for="theme-name" class="block text-lg font-medium text-gray-700 required-label">テーマ名</label>
+            <div class="space-y-3 p-4 bg-gray-100 rounded-xl shadow-lg"> <label for="theme-name" class="block text-lg font-medium text-gray-700 required-label">テーマ名</label>
                 <input type="text" id="theme-name" class="w-full p-3 border border-gray-300 rounded-lg text-xl sm:text-2xl focus:ring-indigo-500 focus:border-indigo-500" placeholder="例: ハロウィン単語, 動物の名前">
                 <p id="word-count-info" class="text-sm text-gray-500 text-right">単語数: 0 / 最小5単語</p>
                 
-                <div class="space-y-4 p-4 bg-purple-50 rounded-xl shadow-lg border-t-4 border-purple-400">
-                    <h3 class="text-xl font-bold text-purple-700 flex items-center">
+                <div class="space-y-3 p-4 bg-purple-50 rounded-xl shadow-lg border-t-4 border-purple-400"> <h3 class="text-xl font-bold text-purple-700 flex items-center">
                         📋 リスト一括取り込み
                     </h3>
                     <p class="text-sm text-gray-600">
-                        外部リストをここに貼り付けて、一括で単語を追加できます。<br>
-                        形式: <code>Part1,Part2,日本語訳</code> または <code>FULLWORD,日本語訳</code> (自動で中央付近で分割されます)
+                        形式: <code>Part1,Part2,日本語訳</code> または <code>FULLWORD,日本語訳</code>
                     </p>
-                    <textarea id="import-list-textarea" class="w-full p-3 border border-gray-300 rounded-lg h-32 focus:ring-purple-500 focus:border-purple-500 text-sm" placeholder="ここにリストを貼り付けてください..."></textarea>
+                    <textarea id="import-list-textarea" class="w-full p-3 border border-gray-300 rounded-lg h-28 focus:ring-purple-500 focus:border-purple-500 text-sm" placeholder="ここにリストを貼り付けてください..."></textarea>
                     <button id="import-list-button" class="w-full p-2 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition duration-150" disabled>
                         リストに取り込み実行
                     </button>
@@ -133,18 +127,17 @@
 
                 <div class="bg-white p-4 rounded-lg shadow-inner space-y-3 border-t-4 border-indigo-400">
                     <h3 class="text-xl font-semibold text-gray-700">単語個別追加フォーム</h3>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 required-label">前半 (Part 1)</label>
-                            <input type="text" id="input-part1" class="w-full p-2 border rounded-lg text-base" placeholder="例: JACK-O'">
+                    <div class="grid grid-cols-3 gap-2"> <div>
+                            <label class="block text-sm font-medium text-gray-700 required-label">前半 (P1)</label>
+                            <input type="text" id="input-part1" class="w-full p-2 border rounded-lg text-base" placeholder="JACK-O'">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 required-label">後半 (Part 2)</label>
-                            <input type="text" id="input-part2" class="w-full p-2 border rounded-lg text-base" placeholder="例: LANTERN">
+                            <label class="block text-sm font-medium text-gray-700 required-label">後半 (P2)</label>
+                            <input type="text" id="input-part2" class="w-full p-2 border rounded-lg text-base" placeholder="LANTERN">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 required-label">日本語訳</label>
-                            <input type="text" id="input-translation" class="w-full p-2 border rounded-lg text-base" placeholder="例: ジャック・オー・ランタン">
+                            <input type="text" id="input-translation" class="w-full p-2 border rounded-lg text-base" placeholder="ジャック・オー・ランタン">
                         </div>
                     </div>
                     <button id="add-word-button" class="w-full p-2 bg-purple-500 text-white font-bold rounded-lg hover:bg-purple-600 transition duration-150" disabled>
@@ -158,8 +151,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-between space-x-4">
-                <button id="back-to-home-button" class="px-6 py-3 bg-gray-500 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-gray-600 transition duration-150 flex-1">
+            <div class="flex justify-between space-x-3"> <button id="back-to-home-button" class="px-6 py-3 bg-gray-500 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-gray-600 transition duration-150 flex-1">
                     ホームに戻る
                 </button>
                 <button id="save-theme-button" class="px-6 py-3 bg-pink-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-pink-700 transition duration-150 flex-1" disabled>
@@ -171,16 +163,14 @@
         <div id="game-view" style="display: none;">
 
             <div id="step-1-content" class="negative-mt-4">
-                <p id="step1-instruction" class="text-base sm:text-lg font-bold text-center text-indigo-700 mb-4">
-                    💡 **ステップ1: 正しい単語パーツを組み合わせて英単語を完成させましょう！**
+                <p id="step1-instruction" class="text-base sm:text-lg font-bold text-center text-indigo-700 mb-3"> 💡 **ステップ1: 正しい単語パーツを組み合わせて英単語を完成させましょう！**
                 </p>
-                <div id="parts-area" class="puzzle-area flex flex-wrap gap-3 justify-center items-center p-4 bg-gray-50 rounded-xl shadow-inner mb-4">
-                    </div>
+                <div id="parts-area" class="puzzle-area flex flex-wrap gap-2 justify-center items-center p-4 bg-gray-50 rounded-xl shadow-inner mb-3"> </div>
 
                 <div class="flex flex-col items-center">
                     <div id="target-box" class="flex flex-wrap justify-center">
-                        <div class="target-slot w-full sm:w-1/2 md:w-64 h-20 sm:h-24 md:h-32 bg-gray-200 rounded-l-xl border-4 border-dashed border-gray-400 border-r-0 flex items-center justify-center text-4xl sm:text-5xl md:text-7xl font-extrabold text-gray-700" data-slot="1">...</div>
-                        <div class="target-slot w-full sm:w-1/2 md:w-64 h-20 sm:h-24 md:h-32 bg-gray-200 rounded-r-xl border-4 border-dashed border-gray-400 border-l-0 flex items-center justify-center text-4xl sm:text-5xl md:text-7xl font-extrabold text-gray-700" data-slot="2">...</div>
+                        <div class="target-slot w-1/2 md:w-64 h-16 sm:h-20 md:h-24 bg-gray-200 rounded-l-xl border-4 border-dashed border-gray-400 border-r-0 flex items-center justify-center text-3xl sm:text-4xl md:text-6xl font-extrabold text-gray-700" data-slot="1">...</div>
+                        <div class="target-slot w-1/2 md:w-64 h-16 sm:h-20 md:h-24 bg-gray-200 rounded-r-xl border-4 border-dashed border-gray-400 border-l-0 flex items-center justify-center text-3xl sm:text-4xl md:text-6xl font-extrabold text-gray-700" data-slot="2">...</div>
                     </div>
                 </div>
                 
@@ -189,17 +179,13 @@
             </div>
 
             <div id="step-2-section" style="display: none;" class="negative-mt-4">
-                 <p id="step2-instruction" class="text-base sm:text-lg font-bold text-center text-green-700 mb-4">
-                    💡 **ステップ2: 完成した単語と、正しい日本語訳をペアで選択しましょう！**
+                 <p id="step2-instruction" class="text-base sm:text-lg font-bold text-center text-green-700 mb-3"> 💡 **ステップ2: 完成した単語と、正しい日本語訳をペアで選択しましょう！**
                 </p>
                 
-                <div id="game-score-board" class="final-message flex flex-col justify-around items-center p-6 bg-orange-100 rounded-xl shadow-lg mb-8" style="display: none;">
-                    <p class="text-xl sm:text-2xl font-semibold text-gray-700 pt-3">最終ミス回数: <span id="final-miss-display" class="text-4xl sm:text-5xl text-red-600 font-bold">0</span>回</p>
+                <div id="game-score-board" class="final-message flex flex-col justify-around items-center p-6 bg-orange-100 rounded-xl shadow-lg mb-4" style="display: none;"> <p class="text-xl sm:text-2xl font-semibold text-gray-700 pt-3">最終ミス回数: <span id="final-miss-display" class="text-4xl sm:text-5xl text-red-600 font-bold">0</span>回</p>
                 </div>
                 
-                <div id="step2-pair-area" class="flex flex-col md:flex-row gap-4 mb-4">
-                    
-                    <div id="english-word-container" class="md:w-1/2 flex flex-col space-y-2 p-3 bg-yellow-100 rounded-xl shadow-md">
+                <div id="step2-pair-area" class="flex flex-col md:flex-row gap-3 mb-3"> <div id="english-word-container" class="md:w-1/2 flex flex-col space-y-2 p-3 bg-yellow-100 rounded-xl shadow-md">
                         <p class="text-lg font-bold text-center text-gray-700">完成した単語</p>
                         <div id="completed-words-step2" class="puzzle-area flex flex-wrap gap-2 justify-center items-center p-3 bg-yellow-400 rounded-xl shadow-lg">
                             </div>
@@ -212,14 +198,12 @@
                     </div>
                 </div>
                 
-                <div id="final-pairs-display" class="mt-4 flex flex-col space-y-3">
+                <div id="final-pairs-display" class="mt-2 flex flex-col space-y-2"> 
                     </div>
 
-                <div id="final-score-container" class="mt-8"></div>
-            </div>
+                <div id="final-score-container" class="mt-4"></div> </div>
 
-            <div id="game-button-wrapper" class="flex justify-center pt-6">
-                 <button id="game-action-button" class="px-10 py-4 bg-indigo-600 text-white text-2xl sm:text-4xl font-extrabold rounded-full shadow-xl hover:bg-indigo-700 transition duration-150 w-full max-w-sm">
+            <div id="game-button-wrapper" class="flex justify-center pt-4"> <button id="game-action-button" class="px-10 py-4 bg-indigo-600 text-white text-2xl sm:text-4xl font-extrabold rounded-full shadow-xl hover:bg-indigo-700 transition duration-150 w-full max-w-sm">
                     ホームへ
                 </button>
             </div>
@@ -826,7 +810,8 @@
 
             allThemes.forEach(theme => {
                 const div = document.createElement('div');
-                div.className = 'theme-item p-3 bg-white rounded-xl shadow-md text-lg flex justify-between items-center';
+                // theme-item のパディングを削減 p-3 -> p-2
+                div.className = 'theme-item p-2 bg-white rounded-xl shadow-md text-lg flex justify-between items-center'; 
                 
                 // デフォルトテーマの背景色を変更
                 if (theme.id === DEFAULT_THEME_DATA_EIGO.id) {
@@ -1031,7 +1016,7 @@
 
             shuffle(allParts).forEach(part => {
                 const div = document.createElement('div');
-                // 単語パーツのフォントサイズをモバイル向けに調整
+                // 単語パーツのフォントサイズは維持
                 div.className = 'word-part px-3 py-2 bg-orange-500 text-white font-extrabold rounded-xl hover:bg-orange-600 text-3xl sm:text-4xl md:text-5xl shadow-xl border-4 border-transparent';
                 div.textContent = part.text;
                 div.dataset.id = part.id; 
@@ -1104,8 +1089,9 @@
                     slot.classList.add('justify-center');
                     
                     const placeholder = document.createElement('span');
+                    // プレースホルダサイズも調整
                     placeholder.textContent = index === 0 ? 'Part 1' : 'Part 2';
-                    placeholder.className = 'text-base sm:text-xl text-gray-500 font-normal'; /* プレースホルダサイズも調整 */
+                    placeholder.className = 'text-base sm:text-lg text-gray-500 font-normal'; 
                     slot.appendChild(placeholder);
                 }
                 
@@ -1155,7 +1141,7 @@
             completedCount++;
 
             const div = document.createElement('div');
-            // 完成単語のフォントサイズをモバイル向けに調整
+            // 完成単語のフォントサイズは維持
             div.className = 'completed-word px-3 py-2 bg-yellow-400 text-gray-800 font-extrabold rounded-xl hover:bg-yellow-500 text-3xl sm:text-4xl md:text-5xl shadow-xl border-4 border-transparent';
             div.textContent = wordData.full;
             div.dataset.id = wordData.id; 
@@ -1198,7 +1184,7 @@
             
             shuffle(wordsToMove).forEach(word => {
                 word.addEventListener('click', handleStep2Click);
-                // 完成単語のフォントサイズとパディングを調整。w-fullを削除して、flex-wrapで並ぶようにする
+                // 完成単語のフォントサイズとパディングは維持
                 word.className = 'completed-word px-3 py-2 bg-yellow-400 text-gray-800 font-extrabold rounded-xl hover:bg-yellow-500 text-3xl sm:text-4xl md:text-5xl shadow-xl border-4 border-transparent';
                 completedWordsAreaStep2.appendChild(word);
             });
@@ -1206,7 +1192,7 @@
             let translations = gameWordData.map(data => ({ text: data.translation, id: data.id }));
             shuffle(translations).forEach(trans => {
                 const div = document.createElement('div');
-                // 翻訳パーツのフォントサイズとパディングを調整。w-fullを削除して、flex-wrapで並ぶようにする
+                // 翻訳パーツのフォントサイズとパディングは維持
                 div.className = 'translation-part px-3 py-2 bg-green-500 text-white font-extrabold rounded-xl hover:bg-green-600 text-3xl sm:text-4xl md:text-5xl shadow-xl border-4 border-transparent';
                 div.textContent = trans.text;
                 div.dataset.id = trans.id;
@@ -1260,7 +1246,7 @@
                 await new Promise(resolve => setTimeout(resolve, 1500)); 
 
                 const setDiv = document.createElement('div');
-                // 最終ペア表示のフォントサイズをモバイル向けに調整
+                // 最終ペア表示のフォントサイズは維持
                 setDiv.textContent = `${currentWord.textContent} = ${currentTranslation.textContent}`;
                 setDiv.className = 'bg-gray-200 p-4 rounded-lg my-1 font-extrabold text-2xl sm:text-3xl md:text-4xl text-left';
                 finalPairsDisplay.appendChild(setDiv);
