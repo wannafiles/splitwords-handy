@@ -10,16 +10,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
         /* 画面最大化の適用 (Req 5 & ユーザー要望1) */
-        /* bodyのpaddingを削除し、overflow-hiddenも削除して、#game-containerにマージンを移譲 (ユーザー要望2: 画面下部が触れない問題の修正) */
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f3f4f6; 
             width: 100vw;
             height: 100vh;
-            /* overflow: hidden; を削除 */
+            overflow: hidden; 
         }
         
-        .puzzle-area { min-height: 6rem; } 
+        /* フォントサイズに合わせて高さを調整 (6rem から 4rem に縮小) */
+        .puzzle-area { min-height: 4rem; } 
         
         /* 単語パーツの共通スタイル */
         .word-part, .completed-word, .translation-part, .theme-item {
@@ -43,18 +43,18 @@
         /* エラー時に一時的に赤くするピースのスタイル */
         .incorrect-part-temp { background-color: #fca5a5 !important; } /* Tailwind red-300 */
 
-        /* ターゲットスロットのスタイル調整 */
+        /* ターゲットスロットのスタイル調整 - line-heightを削除し、flexboxに依存 */
         .target-slot {
             transition: background-color 0.2s;
-            line-height: 5rem; 
+            /* line-height: 5rem; を削除 */
             font-weight: 900; 
         }
         
-        /* ゲームクリア/オーバー時のメッセージ表示用 */
+        /* ゲームクリア/オーバー時のメッセージ表示用 - フォントサイズを縮小 (1.5rem から 1.25rem に縮小) */
         .final-message {
             padding: 1rem;
             margin-top: 1rem;
-            font-size: 1.5rem; 
+            font-size: 1.25rem; 
             font-weight: 700;
             text-align: center;
         }
@@ -76,32 +76,32 @@
         }
     </style>
 </head>
-<body class="w-screen h-screen bg-gray-50 text-gray-800 antialiased flex items-start justify-center">
+<body class="w-screen h-screen overflow-hidden bg-gray-50 text-gray-800 antialiased p-4 sm:p-8 flex items-start justify-center">
 
-    <div id="game-container" class="w-full h-full mx-auto bg-white p-6 sm:p-10 rounded-3xl shadow-2xl border border-gray-100 flex flex-col space-y-4 max-w-7xl overflow-y-auto my-4 sm:my-8">
+    <div id="game-container" class="w-full h-full mx-auto bg-white p-6 sm:p-10 rounded-3xl shadow-2xl border border-gray-100 flex flex-col space-y-4 max-w-7xl overflow-y-auto">
         
         <div id="control-area" class="flex flex-col items-center justify-center">
-            <h1 id="game-title" class="text-5xl sm:text-6xl font-black text-indigo-800 mb-6 text-center">Word Split Challenge</h1>
+            <h1 id="game-title" class="text-3xl sm:text-4xl font-black text-indigo-800 mb-6 text-center">Word Split Challenge</h1>
         </div>
         
         <div id="home-view" class="space-y-6">
-            <h2 class="text-3xl font-bold text-gray-700">テーマ選択 (ローカル保存)</h2>
+            <h2 class="text-xl font-bold text-gray-700">テーマ選択 (ローカル保存)</h2>
 
             <div id="theme-list" class="flex flex-col space-y-3 p-4 bg-gray-50 rounded-xl min-h-40 shadow-inner">
                 <p class="text-gray-500 text-center py-10" id="loading-message">テーマをロード中...</p>
             </div>
             
             <div id="question-count-setting" class="p-4 bg-indigo-50 rounded-xl shadow-inner border-t-4 border-indigo-400">
-                <label for="question-limit" class="block text-lg font-bold text-gray-700">出題数 (問題)</label>
-                <input type="number" id="question-limit" min="5" value="10" class="w-full p-3 border border-gray-300 rounded-lg text-2xl focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="question-limit" class="block text-base font-bold text-gray-700">出題数 (問題)</label>
+                <input type="number" id="question-limit" min="5" value="10" class="w-full p-3 border border-gray-300 rounded-lg text-xl focus:ring-indigo-500 focus:border-indigo-500">
                 <p id="max-question-info" class="text-sm text-gray-500 mt-1">最大出題数: 0 (選択したテーマに依存)</p>
             </div>
 
             <div class="flex flex-col space-y-4">
-                <button id="start-selected-theme-button" class="px-6 py-3 bg-green-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-green-700 transition duration-150" disabled>
+                <button id="start-selected-theme-button" class="px-6 py-3 bg-green-600 text-white text-lg font-extrabold rounded-xl shadow-md hover:bg-green-700 transition duration-150" disabled>
                     選択したテーマでスタート
                 </button>
-                <button id="new-theme-button" class="px-6 py-3 bg-indigo-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-indigo-700 transition duration-150">
+                <button id="new-theme-button" class="px-6 py-3 bg-indigo-600 text-white text-lg font-extrabold rounded-xl shadow-md hover:bg-indigo-700 transition duration-150">
                     新しいテーマを作成
                 </button>
             </div>
@@ -110,16 +110,16 @@
         </div>
 
         <div id="theme-manager-view" class="space-y-6" style="display: none;">
-            <h2 id="manager-title" class="text-3xl font-bold text-gray-700">新しいテーマを作成</h2>
+            <h2 id="manager-title" class="text-xl font-bold text-gray-700">新しいテーマを作成</h2>
             
             <div class="space-y-4 p-4 bg-gray-100 rounded-xl shadow-lg">
 
-                <label for="theme-name" class="block text-lg font-medium text-gray-700 required-label">テーマ名</label>
-                <input type="text" id="theme-name" class="w-full p-3 border border-gray-300 rounded-lg text-2xl focus:ring-indigo-500 focus:border-indigo-500" placeholder="例: ハロウィン単語, 動物の名前">
+                <label for="theme-name" class="block text-base font-medium text-gray-700 required-label">テーマ名</label>
+                <input type="text" id="theme-name" class="w-full p-3 border border-gray-300 rounded-lg text-xl focus:ring-indigo-500 focus:border-indigo-500" placeholder="例: ハロウィン単語, 動物の名前">
                 <p id="word-count-info" class="text-sm text-gray-500 text-right">単語数: 0 / 最小5単語</p>
                 
                 <div class="space-y-4 p-4 bg-purple-50 rounded-xl shadow-lg border-t-4 border-purple-400">
-                    <h3 class="text-xl font-bold text-purple-700 flex items-center">
+                    <h3 class="text-lg font-bold text-purple-700 flex items-center">
                         📋 リスト一括取り込み
                     </h3>
                     <p class="text-sm text-gray-600">
@@ -133,19 +133,19 @@
                 </div>
 
                 <div class="bg-white p-4 rounded-lg shadow-inner space-y-3 border-t-4 border-indigo-400">
-                    <h3 class="text-xl font-semibold text-gray-700">単語個別追加フォーム</h3>
+                    <h3 class="text-lg font-semibold text-gray-700">単語個別追加フォーム</h3>
                     <div class="grid grid-cols-3 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 required-label">前半 (Part 1)</label>
-                            <input type="text" id="input-part1" class="w-full p-2 border rounded-lg text-lg" placeholder="例: JACK-O'">
+                            <input type="text" id="input-part1" class="w-full p-2 border rounded-lg text-base" placeholder="例: JACK-O'">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 required-label">後半 (Part 2)</label>
-                            <input type="text" id="input-part2" class="w-full p-2 border rounded-lg text-lg" placeholder="例: LANTERN">
+                            <input type="text" id="input-part2" class="w-full p-2 border rounded-lg text-base" placeholder="例: LANTERN">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 required-label">日本語訳</label>
-                            <input type="text" id="input-translation" class="w-full p-2 border rounded-lg text-lg" placeholder="例: ジャック・オー・ランタン">
+                            <input type="text" id="input-translation" class="w-full p-2 border rounded-lg text-base" placeholder="例: ジャック・オー・ランタン">
                         </div>
                     </div>
                     <button id="add-word-button" class="w-full p-2 bg-purple-500 text-white font-bold rounded-lg hover:bg-purple-600 transition duration-150" disabled>
@@ -153,17 +153,17 @@
                     </button>
                 </div>
                 
-                <h3 class="text-xl font-semibold text-gray-700 pt-3">現在の単語リスト</h3>
+                <h3 class="text-lg font-semibold text-gray-700 pt-3">現在の単語リスト</h3>
                 <div id="word-list-editor" class="flex flex-col space-y-2 bg-white p-3 rounded-lg min-h-24 max-h-60 overflow-y-auto">
                     <p class="text-gray-400 text-center py-2">単語がありません</p>
                 </div>
             </div>
 
             <div class="flex justify-between space-x-4">
-                <button id="back-to-home-button" class="px-6 py-3 bg-gray-500 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-gray-600 transition duration-150 flex-1">
+                <button id="back-to-home-button" class="px-6 py-3 bg-gray-500 text-white text-lg font-extrabold rounded-xl shadow-md hover:bg-gray-600 transition duration-150 flex-1">
                     ホームに戻る
                 </button>
-                <button id="save-theme-button" class="px-6 py-3 bg-pink-600 text-white text-xl font-extrabold rounded-xl shadow-md hover:bg-pink-700 transition duration-150 flex-1" disabled>
+                <button id="save-theme-button" class="px-6 py-3 bg-pink-600 text-white text-lg font-extrabold rounded-xl shadow-md hover:bg-pink-700 transition duration-150 flex-1" disabled>
                     テーマを保存
                 </button>
             </div>
@@ -176,9 +176,9 @@
                     </div>
 
                 <div class="flex flex-col items-center">
-                    <div id="target-box" class="flex flex-nowrap justify-center">
-                        <div class="target-slot h-24 sm:h-32 bg-gray-200 rounded-l-xl border-4 border-dashed border-gray-400 border-r-0 flex items-center justify-center text-5xl sm:text-7xl font-extrabold text-gray-700 whitespace-nowrap px-4 flex-shrink-0" data-slot="1">...</div>
-                        <div class="target-slot h-24 sm:h-32 bg-gray-200 rounded-r-xl border-4 border-dashed border-gray-400 border-l-0 flex items-center justify-center text-5xl sm:text-7xl font-extrabold text-gray-700 whitespace-nowrap px-4 flex-shrink-0" data-slot="2">...</div>
+                    <div id="target-box" class="flex flex-wrap justify-center">
+                        <div class="target-slot w-full md:w-64 h-16 sm:h-20 bg-gray-200 rounded-l-xl border-4 border-dashed border-gray-400 border-r-0 flex items-center justify-center text-3xl sm:text-4xl font-extrabold text-gray-700" data-slot="1">...</div>
+                        <div class="target-slot w-full md:w-64 h-16 sm:h-20 bg-gray-200 rounded-r-xl border-4 border-dashed border-gray-400 border-l-0 flex items-center justify-center text-3xl sm:text-4xl font-extrabold text-gray-700" data-slot="2">...</div>
                     </div>
                 </div>
                 
@@ -189,7 +189,7 @@
             <div id="step-2-section" style="display: none;" class="negative-mt-4">
                 
                 <div id="game-score-board" class="final-message flex flex-col justify-around items-center p-6 bg-orange-100 rounded-xl shadow-lg mb-8" style="display: none;">
-                    <p class="text-2xl sm:text-3xl font-semibold text-gray-700 pt-3">最終ミス回数: <span id="final-miss-display" class="text-5xl sm:text-6xl text-red-600 font-bold">0</span>回</p>
+                    <p class="text-xl sm:text-2xl font-semibold text-gray-700 pt-3">最終ミス回数: <span id="final-miss-display" class="text-3xl sm:text-4xl text-red-600 font-bold">0</span>回</p>
                 </div>
                 
                 <div id="step2-pair-area" class="flex flex-col md:flex-row gap-4 mb-4">
@@ -212,7 +212,7 @@
             </div>
 
             <div id="game-button-wrapper" class="flex justify-center pt-6">
-                <button id="game-action-button" class="px-12 py-5 bg-indigo-600 text-white text-3xl sm:text-5xl font-extrabold rounded-full shadow-xl hover:bg-indigo-700 transition duration-150 w-full max-w-sm">
+                <button id="game-action-button" class="px-12 py-5 bg-indigo-600 text-white text-xl sm:text-2xl font-extrabold rounded-full shadow-xl hover:bg-indigo-700 transition duration-150 w-full max-w-sm">
                     ホームへ
                 </button>
             </div>
@@ -221,7 +221,7 @@
     </div>
 
     <div id="feedback-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
-        <div id="feedback-content" class="px-10 py-6 rounded-2xl text-white text-6xl font-black shadow-2xl transform scale-105 transition-transform duration-300">
+        <div id="feedback-content" class="px-10 py-6 rounded-2xl text-white text-3xl font-black shadow-2xl transform scale-105 transition-transform duration-300">
         </div>
     </div>
 
@@ -381,7 +381,7 @@
                 { part1: '坂上田', part2: '村麻呂', translation: '蝦夷と戦った征夷大将軍' },
                 { part1: '藤原', part2: '頼通', translation: '平等院鳳凰堂' },
                 { part1: '平', part2: '将門', translation: '新皇と名乗り関東で反乱' },
-                { part1: '最', part2: '澄', part2_kana: 'さいちょう', translation: '比叡山・延暦寺・天台宗' },
+                { part1: '最', part2: '澄', translation: '比叡山・延暦寺・天台宗' },
                 { part1: '空', part2: '海', translation: '高野山・金剛峯寺・真言宗' },
                 { part1: '紫', part2: '式部', translation: '源氏物語' },
                 { part1: '清少', part2: '納言', translation: '枕草子' },
@@ -443,14 +443,13 @@
         const themeManagerView = document.getElementById('theme-manager-view');
         const gameView = document.getElementById('game-view');
         const managerTitle = document.getElementById('manager-title');
-        const gameTitle = document.getElementById('game-title');
+        const gameTitle = document.getElementById('game-title'); 
 
         // Home Elements
         const themeList = document.getElementById('theme-list');
         const startSelectedThemeButton = document.getElementById('start-selected-theme-button');
         const newThemeButton = document.getElementById('new-theme-button');
-        const loadingMessage = document.getElementById('loading-message');
-
+        const loadingMessage = document.getElementById('loading-message'); 
         // Question Limit Elements
         const questionLimitInput = document.getElementById('question-limit');
         const maxQuestionInfo = document.getElementById('max-question-info');
@@ -465,46 +464,49 @@
         const saveThemeButton = document.getElementById('save-theme-button');
         const backToHomeButton = document.getElementById('back-to-home-button');
         const wordCountInfo = document.getElementById('word-count-info');
-
+        
         // Import Elements
         const importListTextarea = document.getElementById('import-list-textarea');
         const importListButton = document.getElementById('import-list-button');
+
 
         // Game Elements (既存)
         const partsArea = document.getElementById('parts-area');
         const targetSlots = document.querySelectorAll('.target-slot');
         const completedWordsAreaStep1 = document.getElementById('completed-words');
-        const completedWordsAreaStep2 = document.getElementById('completed-words-step2');
+        const completedWordsAreaStep2 = document.getElementById('completed-words-step2'); 
         const translationArea = document.getElementById('translation-area');
         const gameActionButton = document.getElementById('game-action-button');
-        const gameButtonWrapper = document.getElementById('game-button-wrapper');
+        const gameButtonWrapper = document.getElementById('game-button-wrapper'); 
         const gameScoreBoard = document.getElementById('game-score-board');
         const finalMissDisplay = document.getElementById('final-miss-display');
         const step1Content = document.getElementById('step-1-content');
         const step2Section = document.getElementById('step-2-section');
         const finalPairsDisplay = document.getElementById('final-pairs-display');
-        const step2PairArea = document.getElementById('step2-pair-area');
-        const finalScoreContainer = document.getElementById('final-score-container');
-        
+        const step2PairArea = document.getElementById('step2-pair-area'); 
+        const finalScoreContainer = document.getElementById('final-score-container'); 
+
         // Feedback
         const feedbackOverlay = document.getElementById('feedback-overlay');
         const feedbackContent = document.getElementById('feedback-content');
 
+
         // アプリケーション状態
         let currentView = 'home';
-        let allThemes = [];
-        let selectedTheme = null;
-        let editingTheme = { id: null, name: '', words: [] };
-        let questionLimit = 10;
-
+        let allThemes = []; 
+        let selectedTheme = null; 
+        let editingTheme = { id: null, name: '', words: [] }; 
+        let questionLimit = 10; 
+        
         // ゲーム状態
-        let gameWordData = [];
-        let misses = 0;
-        let completedCount = 0;
-        let step2MatchCount = 0;
+        let gameWordData = []; 
+        let misses = 0; 
+        let completedCount = 0; 
+        let step2MatchCount = 0; 
         let isGameActive = false;
-        let isChecking = false;
-        let slottedParts = [null, null];
+        let isChecking = false; 
+        let slottedParts = [null, null]; 
+
 
         // ----------------------------------------------------------------
         // 3. UI/View 制御 & ユーティリティ
@@ -515,7 +517,7 @@
             homeView.style.display = 'none';
             themeManagerView.style.display = 'none';
             gameView.style.display = 'none';
-
+            
             // Req 1: タイトル表示の制御
             if (view === 'game') {
                 gameTitle.style.display = 'none';
@@ -531,20 +533,21 @@
             } else if (view === 'manager') {
                 themeManagerView.style.display = 'block';
                 // テキストエリアをクリア
-                importListTextarea.value = '';
+                importListTextarea.value = ''; 
                 importListButton.disabled = true;
                 updateManagerUI();
             } else if (view === 'game') {
                 gameView.style.display = 'block';
             }
         }
-
+        
         function logFeedback(text, type = 'info') {
             console.log(`[${type.toUpperCase()}] ${text}`);
         }
-
+        
         function showFeedback(message, type) {
             feedbackContent.className = 'px-10 py-6 rounded-2xl text-white text-6xl font-black shadow-2xl transform scale-105 transition-transform duration-300';
+            
             if (type === 'success') {
                 feedbackContent.textContent = '✅ ' + message;
                 feedbackContent.classList.add('bg-green-600');
@@ -552,6 +555,7 @@
                 feedbackContent.textContent = '❌ ' + message;
                 feedbackContent.classList.add('bg-red-600');
             }
+            
             feedbackOverlay.classList.remove('opacity-0', 'pointer-events-none');
             
             setTimeout(() => {
@@ -566,6 +570,7 @@
             }
             return array;
         }
+
 
         // ----------------------------------------------------------------
         // 4. テーマの永続化 (localStorage)
@@ -588,739 +593,774 @@
         function loadThemes() {
             loadingMessage.style.display = 'block';
             loadingMessage.textContent = 'テーマをロード中...';
-
+            
             try {
                 const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-                let loadedThemes = data ? JSON.parse(data) : [];
+                allThemes = data ? JSON.parse(data) : [];
+                
+                let shouldSave = false;
 
-                // デフォルトテーマをロード
+                // NEW: Default Theme Check and Initialization (複数のテーマに対応)
                 ALL_DEFAULT_THEMES.forEach(defaultTheme => {
-                    const exists = loadedThemes.some(theme => theme.id === defaultTheme.id);
-                    if (!exists) {
-                        loadedThemes.push(defaultTheme);
+                    const defaultThemeExists = allThemes.some(t => t.id === defaultTheme.id);
+                    
+                    if (!defaultThemeExists) {
+                        // Add the default theme to the start of the list
+                        allThemes.unshift(defaultTheme); 
+                        shouldSave = true;
+                        logFeedback(`Default theme "${defaultTheme.name}" added.`, 'local');
                     }
                 });
-
-                allThemes = loadedThemes;
-                renderThemeList();
-                logFeedback(`Themes loaded: ${allThemes.length} items.`, 'local');
-
+                
+                if (shouldSave) {
+                    // 最新の状態（デフォルトテーマを含む）を保存
+                    saveThemesToLocal(); 
+                }
+                
+                logFeedback(`Loaded ${allThemes.length} themes (total) from localStorage.`, 'local');
             } catch (e) {
-                logFeedback(`Error loading themes: ${e.message}`, 'error');
-                showFeedback('テーマの読み込みに失敗しました。', 'error');
-            } finally {
-                loadingMessage.style.display = 'none';
-                if (allThemes.length === 0) {
-                    loadingMessage.textContent = 'テーマがありません。新しいテーマを作成してください。';
-                    loadingMessage.style.display = 'block';
-                }
+                logFeedback(`Error loading from localStorage: ${e.message}`, 'error');
+                allThemes = [...ALL_DEFAULT_THEMES]; // Fallback to only the default themes
+                saveThemesToLocal(); 
+                showFeedback('データのロード中にエラーが発生しました。デフォルトテーマで開始します。', 'error');
             }
-        }
-
-        function renderThemeList() {
-            themeList.innerHTML = '';
-            if (allThemes.length === 0) {
-                loadingMessage.textContent = 'テーマがありません。新しいテーマを作成してください。';
-                loadingMessage.style.display = 'block';
-                return;
-            }
-
-            allThemes.forEach(theme => {
-                const themeElement = document.createElement('div');
-                themeElement.className = `theme-item p-4 rounded-xl shadow cursor-pointer transition duration-150 flex justify-between items-center ${selectedTheme && selectedTheme.id === theme.id ? 'bg-indigo-200 border-indigo-600' : 'bg-white hover:bg-gray-100 border-gray-200'}`;
-                themeElement.dataset.themeId = theme.id;
-                
-                const wordCount = theme.words ? theme.words.length : 0;
-                
-                themeElement.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <p class="text-xl font-bold text-indigo-700 truncate">${theme.name}</p>
-                        <p class="text-sm text-gray-500">${wordCount} 単語 (${new Date(theme.createdAt).toLocaleDateString()})</p>
-                    </div>
-                    <div class="flex space-x-2 ml-4">
-                         <button data-action="edit" class="p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm font-semibold transition duration-150">
-                            編集
-                        </button>
-                        ${theme.id.startsWith('default_') ? 
-                            `<button class="p-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed" disabled>削除</button>` :
-                            `<button data-action="delete" class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold transition duration-150">削除</button>`
-                        }
-                    </div>
-                `;
-
-                themeElement.addEventListener('click', (e) => {
-                    if (e.target.dataset.action === 'edit') {
-                        setupEditTheme(theme);
-                        setView('manager');
-                    } else if (e.target.dataset.action === 'delete') {
-                        deleteTheme(theme.id, theme.name);
-                    } else {
-                        selectTheme(theme);
-                    }
-                });
-
-                themeList.appendChild(themeElement);
-            });
             
-            // 選択状態の復元
-            if (selectedTheme) {
-                selectTheme(selectedTheme);
-            }
-        }
-
-        function selectTheme(theme) {
-            selectedTheme = theme;
-            startSelectedThemeButton.disabled = false;
-            
-            // 最大出題数の表示を更新
-            const maxWords = selectedTheme.words.length;
-            maxQuestionInfo.textContent = `最大出題数: ${maxWords} (選択したテーマに依存)`;
-            questionLimitInput.max = maxWords;
-            if (parseInt(questionLimitInput.value) > maxWords) {
-                questionLimitInput.value = maxWords > 0 ? maxWords : 5;
-            }
-
-            // UIの選択状態を更新
-            document.querySelectorAll('.theme-item').forEach(el => {
-                if (el.dataset.themeId === theme.id) {
-                    el.classList.add('bg-indigo-200', 'border-indigo-600');
-                    el.classList.remove('bg-white', 'hover:bg-gray-100', 'border-gray-200');
-                } else {
-                    el.classList.remove('bg-indigo-200', 'border-indigo-600');
-                    el.classList.add('bg-white', 'hover:bg-gray-100', 'border-gray-200');
-                }
-            });
+            loadingMessage.style.display = 'none';
+            updateThemeListUI();
         }
         
-        function deleteTheme(id, name) {
-            if (confirm(`本当にテーマ「${name}」を削除しますか？\nこの操作は元に戻せません。`)) {
-                allThemes = allThemes.filter(theme => theme.id !== id);
-                if (selectedTheme && selectedTheme.id === id) {
-                    selectedTheme = null;
-                    startSelectedThemeButton.disabled = true;
-                    maxQuestionInfo.textContent = '最大出題数: 0 (選択したテーマに依存)';
+        function saveTheme(theme) {
+            if (!theme.id) {
+                theme.id = generateUniqueId();
+                theme.createdAt = new Date().toISOString();
+                allThemes.push(theme);
+                showFeedback('新しいテーマを保存しました', 'success');
+            } 
+            else {
+                const index = allThemes.findIndex(t => t.id === theme.id);
+                if (index !== -1) {
+                    theme.updatedAt = new Date().toISOString();
+                    allThemes[index] = theme;
+                    showFeedback('テーマを更新しました', 'success');
+                } else {
+                    showFeedback('テーマの更新に失敗しました。', 'error');
+                    return;
                 }
-                saveThemesToLocal();
-                renderThemeList();
+            }
+            
+            saveThemesToLocal(); 
+            setView('home'); 
+        }
+
+        function deleteTheme(themeId) {
+            // デフォルトテーマの削除は許可しない
+            if (ALL_DEFAULT_THEMES.some(t => t.id === themeId)) {
+                showFeedback('このテーマは削除できません。', 'error');
+                return;
+            }
+
+            const initialLength = allThemes.length;
+            allThemes = allThemes.filter(t => t.id !== themeId);
+            
+            if (allThemes.length < initialLength) {
+                saveThemesToLocal(); 
                 showFeedback('テーマを削除しました', 'success');
-            }
-        }
-
-        // ----------------------------------------------------------------
-        // 5. テーマ管理 (Manager View) 
-        // ----------------------------------------------------------------
-
-        function setupNewTheme() {
-            editingTheme = { id: generateUniqueId(), name: '', words: [] };
-            themeNameInput.value = '';
-            managerTitle.textContent = '新しいテーマを作成';
-            updateManagerUI();
-        }
-
-        function setupEditTheme(theme) {
-            editingTheme = JSON.parse(JSON.stringify(theme)); // deep copy
-            themeNameInput.value = editingTheme.name;
-            managerTitle.textContent = `テーマ「${editingTheme.name}」を編集`;
-            updateManagerUI();
-        }
-
-        function updateManagerUI() {
-            // 単語リストの表示
-            wordListEditor.innerHTML = '';
-            const words = editingTheme.words;
-
-            if (words.length === 0) {
-                wordListEditor.innerHTML = '<p class="text-gray-400 text-center py-2">単語がありません</p>';
-                saveThemeButton.disabled = true;
             } else {
-                words.forEach((word, index) => {
-                    const wordElement = document.createElement('div');
-                    wordElement.className = 'flex justify-between items-center p-2 bg-gray-50 rounded-lg border border-gray-200';
-                    wordElement.innerHTML = `
-                        <p class="text-sm font-medium text-gray-800 flex-1 min-w-0 break-all">${word.part1} | ${word.part2} <span class="text-gray-500 ml-2">(${word.translation})</span></p>
-                        <button data-index="${index}" data-action="remove" class="ml-4 p-1 text-red-500 hover:text-red-700 transition duration-150">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    `;
-                    wordListEditor.appendChild(wordElement);
-                });
-                
-                // 編集中のテーマが有効かチェック
-                checkThemeValidity();
+                 showFeedback('テーマが見つかりませんでした。', 'error');
             }
-
-            // 単語数の表示更新
-            wordCountInfo.textContent = `単語数: ${words.length} / 最小5単語`;
-            
-            // リスナーの再設定 (動的生成された削除ボタン)
-            wordListEditor.querySelectorAll('button[data-action="remove"]').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const index = parseInt(e.currentTarget.dataset.index);
-                    removeWordFromTheme(index);
-                });
-            });
+            updateThemeListUI(); 
         }
 
-        function checkThemeValidity() {
-            const isValid = editingTheme.words.length >= 5 && editingTheme.name.trim() !== '';
-            saveThemeButton.disabled = !isValid;
-        }
-
-        function addWordToTheme() {
-            const part1 = inputPart1.value.trim();
-            const part2 = inputPart2.value.trim();
-            const translation = inputTranslation.value.trim();
-
-            if (!part1 || !part2 || !translation) {
-                showFeedback('全てのフィールドを入力してください', 'error');
-                return;
-            }
-            
-            const newWord = { part1: part1, part2: part2, translation: translation };
-
-            // 重複チェック
-            const fullWord = part1 + part2;
-            if (editingTheme.words.some(w => w.part1 + w.part2 === fullWord)) {
-                showFeedback('同じ単語は既に追加されています', 'error');
-                return;
-            }
-
-            editingTheme.words.push(newWord);
-            updateManagerUI();
-
-            // フォームのクリア
+        // ----------------------------------------------------------------
+        // 5. Theme Manager UI 制御
+        // ----------------------------------------------------------------
+        
+        function setupNewTheme() {
+            editingTheme = { id: null, name: '', words: [] };
+            managerTitle.textContent = '新しいテーマを作成';
+            themeNameInput.value = '';
             inputPart1.value = '';
             inputPart2.value = '';
             inputTranslation.value = '';
-            inputPart1.focus();
-
-            showFeedback('単語を追加しました', 'success');
+            importListTextarea.value = ''; 
+            updateManagerUI();
         }
 
+        function editExistingTheme(theme) {
+            editingTheme = JSON.parse(JSON.stringify(theme)); 
+            managerTitle.textContent = `テーマを編集: ${theme.name}`;
+            themeNameInput.value = theme.name;
+            importListTextarea.value = ''; 
+            updateManagerUI();
+            setView('manager');
+        }
+
+        function updateManagerUI() {
+            wordListEditor.innerHTML = '';
+            if (editingTheme.words.length === 0) {
+                wordListEditor.innerHTML = '<p class="text-gray-400 text-center py-2">単語がありません</p>';
+            } else {
+                editingTheme.words.forEach((word, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center p-2 bg-indigo-50 rounded-lg';
+                    div.innerHTML = `
+                        <span class="text-sm font-medium text-gray-700">${word.part1} | ${word.part2} = ${word.translation}</span>
+                        <button data-index="${index}" class="remove-word-btn text-red-500 hover:text-red-700 font-bold px-2">削除</button>
+                    `;
+                    wordListEditor.appendChild(div);
+                });
+                wordListEditor.querySelectorAll('.remove-word-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => removeWordFromTheme(parseInt(e.target.dataset.index)));
+                });
+            }
+            
+            wordCountInfo.textContent = `単語数: ${editingTheme.words.length} / 最小5単語`;
+
+            const isValid = themeNameInput.value.trim() !== '' && editingTheme.words.length >= 5;
+            saveThemeButton.disabled = !isValid;
+        }
+        
+        // 単語個別追加フォームの制御
+        [themeNameInput, inputPart1, inputPart2, inputTranslation].forEach(input => {
+            input.addEventListener('input', () => {
+                const part1 = inputPart1.value.trim();
+                const part2 = inputPart2.value.trim();
+                const trans = inputTranslation.value.trim();
+                addWordButton.disabled = !(part1 && part2 && trans);
+                
+                editingTheme.name = themeNameInput.value.trim();
+                updateManagerUI(); 
+            });
+        });
+
+        function addWordToTheme() {
+            const part1 = inputPart1.value.trim().toUpperCase();
+            const part2 = inputPart2.value.trim().toUpperCase();
+            const translation = inputTranslation.value.trim();
+            
+            if (part1 && part2 && translation) {
+                editingTheme.words.push({ part1, part2, translation });
+                
+                inputPart1.value = '';
+                inputPart2.value = '';
+                inputTranslation.value = '';
+                addWordButton.disabled = true;
+                
+                updateManagerUI();
+            }
+        }
+        
         function removeWordFromTheme(index) {
             editingTheme.words.splice(index, 1);
             updateManagerUI();
         }
-
-        function saveTheme(themeToSave) {
-            themeToSave.name = themeNameInput.value.trim();
-
-            if (themeToSave.name === '') {
-                showFeedback('テーマ名を入力してください', 'error');
-                return;
-            }
-
-            if (themeToSave.words.length < 5) {
-                 showFeedback('最低5単語必要です。', 'error');
-                return;
-            }
-
-            // 既存のテーマを更新または新しいテーマを追加
-            const existingIndex = allThemes.findIndex(t => t.id === themeToSave.id);
-            if (existingIndex !== -1) {
-                // 更新
-                allThemes[existingIndex] = themeToSave;
-                showFeedback('テーマを更新しました', 'success');
-            } else {
-                // 新規追加
-                themeToSave.createdAt = new Date().toISOString();
-                allThemes.push(themeToSave);
-                showFeedback('新しいテーマを保存しました', 'success');
-            }
-
-            saveThemesToLocal();
-            setView('home'); // ホームに戻る
-        }
         
-        function handleImportList() {
-            const listText = importListTextarea.value.trim();
-            if (!listText) return;
-
-            const lines = listText.split('\n').filter(line => line.trim() !== '');
-            let importedCount = 0;
-
-            lines.forEach(line => {
-                const parts = line.split(',').map(p => p.trim());
-                let part1, part2, translation;
-
-                if (parts.length === 3) {
-                    // Part1, Part2, 日本語訳 の形式
-                    [part1, part2, translation] = parts;
-                } else if (parts.length === 2) {
-                    // FULLWORD, 日本語訳 の形式
-                    const fullWord = parts[0];
-                    translation = parts[1];
-                    // 中央付近で分割
-                    const splitIndex = Math.ceil(fullWord.length / 2);
-                    part1 = fullWord.substring(0, splitIndex);
-                    part2 = fullWord.substring(splitIndex);
-                } else {
-                    return; // 無効な行はスキップ
-                }
-
-                if (part1 && part2 && translation) {
-                    const fullWord = part1 + part2;
-                     // 重複チェック
-                    if (editingTheme.words.some(w => w.part1 + w.part2 === fullWord)) {
-                        return; // 重複はスキップ
-                    }
-                    editingTheme.words.push({ part1, part2, translation });
-                    importedCount++;
-                }
-            });
-
-            if (importedCount > 0) {
-                updateManagerUI();
-                importListTextarea.value = ''; // テキストエリアをクリア
-                showFeedback(`${importedCount}個の単語を取り込みました`, 'success');
-            } else {
-                showFeedback('有効な単語は見つかりませんでした', 'error');
-            }
-        }
-        
-        // 監視: テーマ名、個別入力フォーム、一括入力フォーム
-        themeNameInput.addEventListener('input', checkThemeValidity);
-        
-        inputPart1.addEventListener('input', () => {
-             addWordButton.disabled = !(inputPart1.value.trim() && inputPart2.value.trim() && inputTranslation.value.trim());
-        });
-        inputPart2.addEventListener('input', () => {
-             addWordButton.disabled = !(inputPart1.value.trim() && inputPart2.value.trim() && inputTranslation.value.trim());
-        });
-        inputTranslation.addEventListener('input', () => {
-             addWordButton.disabled = !(inputPart1.value.trim() && inputPart2.value.trim() && inputTranslation.value.trim());
-        });
-
+        // リスト一括取り込み機能 (自動分割ロジック込み)
         importListTextarea.addEventListener('input', () => {
             importListButton.disabled = importListTextarea.value.trim() === '';
         });
 
+        function handleImportList() {
+            const rawText = importListTextarea.value.trim();
+            if (!rawText) return;
+            
+            const lines = rawText.split('\n').filter(line => line.trim() !== '');
+            let importedCount = 0;
+            let failedCount = 0;
+
+            lines.forEach(line => {
+                const parts = line.split(',').map(p => p.trim());
+                
+                let part1 = '';
+                let part2 = '';
+                let translation = '';
+                let isValidEntry = false;
+
+                // 1. 既存の「3項目: Part1, Part2, 日本語訳」形式のチェック
+                if (parts.length === 3) {
+                    [part1, part2, translation] = parts;
+                    if (part1 && part2 && translation) {
+                        isValidEntry = true;
+                    }
+                } 
+                // 2. 「2項目: ENGLISHWORD, 日本語訳」形式のチェックと自動分割ロジック
+                else if (parts.length === 2) {
+                    const [fullWord, trans] = parts;
+                    
+                    if (fullWord && trans) {
+                        // 文字列を大文字化せず、そのままの文字数で処理
+                        const word = fullWord.trim();
+                        const len = word.length;
+                        
+                        // 単語の長さを基に中央で分割するインデックスを計算 (切り下げ)
+                        const splitIndex = Math.floor(len / 2); 
+                        
+                        part1 = word.substring(0, splitIndex);
+                        part2 = word.substring(splitIndex);
+                        translation = trans;
+                        
+                        // 分割後のPart1, Part2が空でないことを確認
+                        if (part1 && part2) {
+                             isValidEntry = true;
+                        }
+                    }
+                } 
+
+                if (isValidEntry) {
+                    editingTheme.words.push({
+                        // Part1, Part2はtoUpperCase()せずに、元の文字列の形式を維持
+                        part1: part1, 
+                        part2: part2,
+                        translation: translation
+                    });
+                    importedCount++;
+                } else {
+                    failedCount++;
+                }
+            });
+
+            importListTextarea.value = '';
+            importListButton.disabled = true;
+            updateManagerUI();
+
+            if (importedCount > 0) {
+                showFeedback(`${importedCount}個の単語を取り込みました`, 'success');
+            }
+            if (failedCount > 0) {
+                logFeedback(`${failedCount}行は無効な形式のためスキップされました。`, 'error');
+            }
+        }
+
 
         // ----------------------------------------------------------------
-        // 6. ゲームロジック (Step 1: 単語パーツの組み立て)
+        // 6. Home UI 制御
+        // ----------------------------------------------------------------
+
+        function updateThemeListUI() {
+            themeList.innerHTML = ''; 
+            
+            if (allThemes.length === 0) {
+                themeList.innerHTML = '<p class="text-gray-500 text-center py-4">保存されたテーマはありません。</p>';
+                startSelectedThemeButton.disabled = true;
+            }
+
+            allThemes.forEach(theme => {
+                const div = document.createElement('div');
+                div.className = 'theme-item p-3 bg-white rounded-xl shadow-md text-lg flex justify-between items-center';
+                
+                // デフォルトテーマの背景色を変更
+                if (theme.id === DEFAULT_THEME_DATA_EIGO.id) {
+                    div.style.backgroundColor = '#ecfdf5'; // Green-50 for English
+                } else if (theme.id === DEFAULT_THEME_DATA_HISTORY.id) {
+                    div.style.backgroundColor = '#fef3c7'; // Yellow-100 for History
+                }
+                
+                if (theme.words.length < 5) {
+                    div.classList.add('opacity-50', 'bg-gray-200');
+                    div.title = "5単語未満のため、ゲーム開始はできません。";
+                }
+
+                div.dataset.id = theme.id;
+                
+                const themeNameSpan = document.createElement('span');
+                themeNameSpan.textContent = `${theme.name} (${theme.words.length}単語)`;
+                themeNameSpan.classList.add('flex-grow', 'font-bold', 'hover:text-indigo-600', 'cursor-pointer');
+                themeNameSpan.addEventListener('click', () => handleThemeSelect(theme));
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'flex space-x-2 ml-4';
+
+                const editBtn = document.createElement('button');
+                editBtn.textContent = '編集';
+                editBtn.className = 'text-sm px-3 py-1 bg-yellow-400 rounded hover:bg-yellow-500';
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // テーマ選択とバッティングしないように
+                    editExistingTheme(theme);
+                });
+                
+                // デフォルトテーマは削除不可
+                if (!ALL_DEFAULT_THEMES.some(t => t.id === theme.id)) { 
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = '削除';
+                    deleteBtn.className = 'text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500';
+                    deleteBtn.addEventListener('click', (e) => { 
+                        e.stopPropagation();
+                        if(window.confirm(`「${theme.name}」を本当に削除しますか？`)) {
+                            deleteTheme(theme.id);
+                        }
+                    });
+                    actionsDiv.appendChild(deleteBtn);
+                }
+                
+                actionsDiv.appendChild(editBtn);
+                
+                div.appendChild(themeNameSpan);
+                div.appendChild(actionsDiv);
+                
+                themeList.appendChild(div);
+            });
+            
+            if (selectedTheme) {
+                const selectedElement = document.querySelector(`.theme-item[data-id="${selectedTheme.id}"]`);
+                if (selectedElement) {
+                    selectedElement.classList.add('selected');
+                }
+                
+                // Max Question Info Update
+                const maxWords = selectedTheme.words.length;
+                
+                // 最小値と最大値を設定
+                questionLimitInput.min = 5;
+                questionLimitInput.max = maxWords;
+
+                // questionLimitを更新し、UIに反映
+                let currentLimit = parseInt(questionLimitInput.value);
+                if (isNaN(currentLimit) || currentLimit < 5) currentLimit = 5;
+                questionLimit = Math.min(currentLimit, maxWords);
+                questionLimitInput.value = questionLimit;
+                
+                maxQuestionInfo.textContent = `最大出題数: ${maxWords} (現在の設定: ${questionLimit}問)`;
+
+            } else {
+                // Reset info if no theme is selected
+                maxQuestionInfo.textContent = `最大出題数: 0 (選択したテーマに依存)`;
+                questionLimitInput.min = 5;
+                questionLimitInput.max = 5; // Default minimal max
+                questionLimitInput.value = 5; 
+            }
+
+            startSelectedThemeButton.disabled = !selectedTheme || selectedTheme.words.length < 5;
+        }
+        
+        function handleThemeSelect(theme) {
+            document.querySelectorAll('.theme-item').forEach(item => item.classList.remove('selected'));
+
+            if (theme.words.length < 5) {
+                showFeedback('ゲーム開始には5単語以上が必要です。', 'error');
+                selectedTheme = null;
+                startSelectedThemeButton.disabled = true;
+                return;
+            }
+
+            if (selectedTheme && selectedTheme.id === theme.id) {
+                selectedTheme = null;
+                startSelectedThemeButton.disabled = true;
+            } else {
+                selectedTheme = theme;
+                document.querySelector(`.theme-item[data-id="${theme.id}"]`).classList.add('selected');
+                startSelectedThemeButton.disabled = false;
+                
+                // Set initial question limit based on selected theme
+                const maxWords = selectedTheme.words.length;
+                questionLimit = Math.min(questionLimitInput.value || 10, maxWords);
+                questionLimitInput.value = questionLimit;
+            }
+            
+            updateThemeListUI(); // Call this to update the max limit info
+        }
+        
+        // Event Listener for question limit change
+        questionLimitInput.addEventListener('input', () => {
+            let value = parseInt(questionLimitInput.value);
+            const min = parseInt(questionLimitInput.min);
+            const max = parseInt(questionLimitInput.max);
+
+            if (isNaN(value) || value < min) {
+                value = min;
+            } else if (value > max) {
+                value = max;
+            }
+            
+            questionLimitInput.value = value;
+            questionLimit = value;
+
+            if (selectedTheme) {
+                 maxQuestionInfo.textContent = `最大出題数: ${selectedTheme.words.length} (現在の設定: ${questionLimit}問)`;
+            }
+        });
+
+
+        // ----------------------------------------------------------------
+        // 7. ゲーム制御
         // ----------------------------------------------------------------
 
         function startGame() {
             if (!selectedTheme || selectedTheme.words.length < 5) {
-                showFeedback('有効なテーマを選択してください (5単語以上)', 'error');
+                showFeedback('テーマを選択するか、5単語以上あるテーマを作成してください。', 'error');
+                setView('home');
                 return;
             }
             
-            // 状態のリセット
-            questionLimit = Math.min(parseInt(questionLimitInput.value), selectedTheme.words.length);
+            const limit = parseInt(questionLimitInput.value) || 5; 
+            const availableWords = selectedTheme.words;
+            
+            let wordsForGame;
+            if (limit >= availableWords.length) {
+                wordsForGame = availableWords;
+            } else {
+                const shuffledWords = shuffle([...availableWords]); 
+                wordsForGame = shuffledWords.slice(0, limit);
+            }
+            
+            // Map the selected words to game data structure
+            gameWordData = wordsForGame.map((word, index) => ({
+                part1: word.part1,
+                part2: word.part2,
+                full: `${word.part1}${word.part2}`, 
+                translation: word.translation,
+                // IDはStep 2で使用するために、ここで一意に設定
+                id: index + 1 
+            }));
+
             misses = 0;
             completedCount = 0;
             step2MatchCount = 0;
             isGameActive = true;
-            slottedParts = [null, null];
 
-            // UIのリセット
-            partsArea.innerHTML = '';
-            completedWordsAreaStep1.innerHTML = '';
-            completedWordsAreaStep1.style.display = 'none';
-            gameScoreBoard.style.display = 'none';
-            step1Content.style.display = 'block';
+            gameButtonWrapper.style.display = 'none';
+
+            gameScoreBoard.style.display = 'none'; 
+            finalScoreContainer.innerHTML = ''; 
             step2Section.style.display = 'none';
-            gameActionButton.textContent = '次の問題へ';
-            gameActionButton.onclick = checkAnswer; // クリックで次の問題へ進む（最初は回答チェック）
 
-            // 出題する単語の選択とシャッフル
-            const allWords = shuffle(selectedTheme.words);
-            gameWordData = allWords.slice(0, questionLimit);
-
-            // ステージの開始
-            loadNextWord();
             setView('game');
+            initializeStep1();
+            logFeedback(`ゲームスタート！出題数: ${gameWordData.length}問`, 'info');
         }
 
-        let currentWordIndex = 0;
-        let currentTargetWord = null;
-        let availableParts = [];
-        let selectedPartElement = null;
+        function finalResult() {
+            isGameActive = false;
+            
+            gameButtonWrapper.style.display = 'flex';
+            
+            const finalScoreHTML = `
+                <div class="final-message flex justify-center items-center p-4 bg-orange-100 rounded-xl shadow-lg mt-8">
+                    <p class="text-3xl font-semibold text-gray-700">最終ミス回数: <span class="text-5xl text-red-600 font-bold">${misses}</span>回</p>
+                </div>
+            `;
+            
+            finalScoreContainer.innerHTML = finalScoreHTML;
 
-        function loadNextWord() {
-            if (currentWordIndex >= questionLimit) {
-                endGame();
-                return;
+            step1Content.style.display = 'none';
+            step2PairArea.style.display = 'none'; 
+            step2Section.style.display = 'block'; 
+            
+            logFeedback(`ゲームクリア！ミスの回数: ${misses}回`, 'final');
+            
+            gameActionButton.textContent = 'ホームへ';
+        }
+
+        function getPartRole(text) {
+            // 文字列による判定: Part 1 または Part 2 のどちらに使われる単語かを特定する
+            for (const data of gameWordData) {
+                if (data.part1 === text) return 1; 
+                if (data.part2 === text) return 2; 
             }
-
-            currentTargetWord = gameWordData[currentWordIndex];
-            availableParts = shuffle([
-                { part: currentTargetWord.part1, slot: 1, element: null },
-                { part: currentTargetWord.part2, slot: 2, element: null }
-            ]);
-
-            // UIの更新
-            partsArea.innerHTML = '';
-            targetSlots[0].textContent = '...';
-            targetSlots[1].textContent = '...';
-            targetSlots[0].classList.remove('correct-slot', 'incorrect-slot');
-            targetSlots[1].classList.remove('correct-slot', 'incorrect-slot');
-            
-            slottedParts = [null, null];
-            selectedPartElement = null;
-            
-            gameActionButton.textContent = '回答チェック';
-            gameActionButton.onclick = checkAnswer; 
-            
-            renderParts();
+            return 0; // 見つからない場合 (本来は発生しないはず)
         }
-        
-        function renderParts() {
-            partsArea.innerHTML = '';
-            availableParts.forEach(wordPart => {
-                const partElement = document.createElement('div');
-                // w-autoとpx-4を追加し、内容に応じて幅を調整
-                partElement.className = 'word-part px-4 py-2 bg-indigo-500 text-white rounded-lg text-xl sm:text-3xl font-bold hover:bg-indigo-600';
-                partElement.textContent = wordPart.part;
-                partElement.dataset.slot = wordPart.slot; // 正しいスロット
-                
-                partElement.addEventListener('click', () => handlePartClick(partElement, wordPart));
-                
-                wordPart.element = partElement;
-                partsArea.appendChild(partElement);
+
+        function initializeStep1() {
+            partsArea.innerHTML = ''; 
+            completedWordsAreaStep1.innerHTML = '';
+            step1Content.style.display = 'block';
+            
+            let allParts = [];
+            
+            // 単語データからパーツを生成
+            gameWordData.forEach(data => {
+                // ここでIDではなく、単語データを渡すことで、getPartRoleの判定が厳密になる
+                allParts.push({ text: data.part1, id: data.id, role: getPartRole(data.part1) });
+                allParts.push({ text: data.part2, id: data.id, role: getPartRole(data.part2) });
             });
+
+            shuffle(allParts).forEach(part => {
+                const div = document.createElement('div');
+                div.className = 'word-part px-4 py-3 bg-orange-500 text-white font-extrabold rounded-xl hover:bg-orange-600 text-5xl sm:text-6xl shadow-xl border-4 border-transparent';
+                div.textContent = part.text;
+                // 注意: ここでセットされるIDは、Step 1の結合チェックには使用せず、Step 2の日本語訳チェックにのみ使用
+                div.dataset.id = part.id; 
+                div.dataset.role = part.role; 
+                div.addEventListener('click', handlePartClick);
+                partsArea.appendChild(div);
+            });
+            
+            slottedParts = [null, null]; 
+            updateVisualSlots();
         }
         
-        function handlePartClick(element, partData) {
-            if (isChecking || element.classList.contains('slotted')) return;
+        function handlePartClick(event) {
+            if (!isGameActive || isChecking || completedCount === gameWordData.length) return;
             
-            // 選択/選択解除の処理
-            if (selectedPartElement === element) {
-                element.classList.remove('selected');
-                selectedPartElement = null;
-            } else {
-                // 前の選択を解除
-                if (selectedPartElement) {
-                    selectedPartElement.classList.remove('selected');
+            const partElement = event.target;
+            const partRole = parseInt(partElement.dataset.role); 
+            
+            if (partRole === 0) return; // 不正なパーツクリック防止
+
+            const partData = {
+                text: partElement.textContent,
+                id: parseInt(partElement.dataset.id), // Step 2で使用
+                element: partElement,
+                role: partRole
+            };
+            
+            const slotIndex = partRole - 1; 
+            
+            // 既にピースがスロットにあり、それをクリックした場合 (選択解除)
+            if (slottedParts[slotIndex] && slottedParts[slotIndex].element === partElement) {
+                slottedParts[slotIndex] = null;
+                partsArea.appendChild(partElement);
+            } 
+            // スロットが空で、ピースをクリックした場合 (配置)
+            else if (!slottedParts[slotIndex]) {
+                slottedParts[slotIndex] = partData;
+                partElement.remove();
+            }
+            // スロットが埋まっている状態で、別のピースをクリックした場合 (競合/ミス発生)
+            else {
+                // **競合時はミスとしてカウントしない (UX向上)**
+
+                // 既にスロットに入っているパーツをインベントリに戻す
+                const existingPartElement = slottedParts[slotIndex].element;
+                partsArea.appendChild(existingPartElement);
+                existingPartElement.classList.remove('selected');
+                
+                // スロットに新しいパーツを配置
+                slottedParts[slotIndex] = partData;
+                partElement.remove();
+
+                // UIを更新
+                updateVisualSlots();
+                
+                // 新しいピースが配置されたため、結合チェックを行う
+                if (slottedParts[0] && slottedParts[1]) {
+                    checkCombination();
                 }
-                // 新しいピースを選択
-                selectedPartElement = element;
-                element.classList.add('selected');
+
+                return; 
             }
             
-            // スロットへの配置を試みる
-            if (selectedPartElement) {
-                // 1. スロット1が空いていれば、そこに配置
-                if (!slottedParts[0]) {
-                    placePart(element, partData, 1);
-                } 
-                // 2. スロット1が埋まっていて、スロット2が空いていれば、そこに配置
-                else if (!slottedParts[1]) {
-                    placePart(element, partData, 2);
-                } 
-                // 3. 両方埋まっている場合、現在の選択を解除するだけにする
-                else {
-                    // 何もしない（または、すでに配置されているピースをタップで戻すロジックを追加可能）
-                }
-            }
-        }
-        
-        function placePart(element, partData, slotIndex) {
-            const targetSlot = targetSlots[slotIndex - 1]; // targetSlotsは0-indexed
-            
-            // スロットに配置
-            targetSlot.textContent = partData.part;
-            targetSlot.dataset.partId = partData.part; // 配置されたピースを識別
-            
-            // 選択状態を解除し、スロット済みとしてマーク
-            element.classList.remove('selected');
-            element.classList.add('slotted');
-            element.style.display = 'none'; // ピースを非表示にする
-            
-            // 状態を更新
-            slottedParts[slotIndex - 1] = { part: partData.part, correctSlot: partData.slot, element: element };
-            selectedPartElement = null;
-            
-            // スロットからピースを取り戻すロジック
-            targetSlot.onclick = () => removePart(slotIndex, targetSlot, element);
-            
-            // 両方のスロットが埋まったら、自動で回答チェックに進むように促す
+            updateVisualSlots();
+
             if (slottedParts[0] && slottedParts[1]) {
-                 gameActionButton.textContent = '回答チェック';
-                 checkAnswer(); 
+                checkCombination();
             }
         }
         
-        function removePart(slotIndex, targetSlot, partElement) {
-            if (isChecking) return;
-            
-            targetSlot.textContent = '...';
-            targetSlot.dataset.partId = ''; 
-            targetSlot.onclick = null; // クリックイベントを解除
+        function updateVisualSlots() {
+            targetSlots.forEach((slot, index) => {
+                const part = slottedParts[index];
+                
+                // スロット内のコンテンツの寄せを変更 (Flexboxのjustify-*を使用)
+                slot.classList.remove('justify-center', 'justify-start', 'justify-end'); 
 
-            // ピースを再表示し、スロット済みマークを解除
-            partElement.style.display = 'block';
-            partElement.classList.remove('slotted');
+                // 既存のコンテンツをクリア
+                slot.innerHTML = ''; 
+
+                if (part) {
+                    // Part 1 (index 0) は右寄せ (justify-end)、Part 2 (index 1) は左寄せ (justify-start)
+                    slot.classList.add(index === 0 ? 'justify-end' : 'justify-start');
+                    
+                    const content = document.createElement('span');
+                    content.textContent = part.text;
+                    // 単語の連結を視覚的に強調するため、マージンを設定
+                    content.className = index === 0 ? 'mr-1' : 'ml-1'; 
+                    slot.appendChild(content);
+                } else {
+                    // スロットが空の場合は中央寄せに戻す
+                    slot.classList.add('justify-center');
+                    
+                    const placeholder = document.createElement('span');
+                    placeholder.textContent = '...';
+                    placeholder.className = ''; 
+                    slot.appendChild(placeholder);
+                }
+                
+                slot.classList.remove('correct-slot', 'incorrect-slot');
+            });
             
-            slottedParts[slotIndex - 1] = null;
+            document.querySelectorAll('.word-part').forEach(p => p.classList.remove('selected', 'border-4', 'border-red-500', 'incorrect-part-temp'));
         }
+        
+        // **修正箇所**: 文字列による正誤判定ロジック
+        async function checkCombination() {
+            isChecking = true;
+            targetSlots.forEach(slot => slot.classList.remove('correct-slot', 'incorrect-slot'));
+            await new Promise(resolve => setTimeout(resolve, 500));
 
-
-        async function checkAnswer() {
-            if (slottedParts[0] === null || slottedParts[1] === null) {
-                showFeedback('両方のスロットを埋めてください', 'error');
+            const part1 = slottedParts[0]; 
+            const part2 = slottedParts[1]; 
+            
+            if (!part1 || !part2) {
+                isChecking = false;
                 return;
             }
             
-            isChecking = true;
-            gameActionButton.disabled = true;
-
-            const part1 = slottedParts[0];
-            const part2 = slottedParts[1];
+            // 結合文字列で判定するロジック
+            const combinedText = part1.text + part2.text;
             
-            const isCorrect = (part1.correctSlot === 1 && part2.correctSlot === 2);
-
-            // スロットの色を更新
-            targetSlots[0].classList.add(isCorrect ? 'correct-slot' : 'incorrect-slot');
-            targetSlots[1].classList.add(isCorrect ? 'correct-slot' : 'incorrect-slot');
+            // gameWordData全体から、結合文字列と一致する単語を探す
+            const matchedWord = gameWordData.find(data => data.full === combinedText);
+            
+            let isCorrect = !!matchedWord; // マッチした単語が見つかれば正解
 
             if (isCorrect) {
-                showFeedback('正解！', 'success');
-                completedCount++;
+                targetSlots.forEach(slot => slot.classList.add('correct-slot'));
+                showFeedback(`単語完成！`, 'success'); 
+                await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // 正解した単語を completedWordsAreaStep1 に移動
-                const completedWordElement = document.createElement('div');
-                // w-autoとpx-4を追加し、内容に応じて幅を調整
-                completedWordElement.className = 'completed-word px-4 py-2 bg-green-500 text-white rounded-full text-xl sm:text-3xl font-bold cursor-pointer';
-                completedWordElement.textContent = part1.part + part2.part;
-                completedWordElement.dataset.wordId = currentTargetWord.part1 + currentTargetWord.part2; // Step 2用
-                completedWordElement.dataset.translation = currentTargetWord.translation; // Step 2用
-                completedWordsAreaStep1.appendChild(completedWordElement);
-                completedWordsAreaStep1.style.display = 'flex'; // 表示させる
-
-                // 2秒待機
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                currentWordIndex++;
-                isChecking = false;
-                gameActionButton.disabled = false;
-                
-                loadNextWord();
-                
+                // 正解が見つかった単語データを使って処理を継続 (Step 2のIDも含む)
+                handleSuccess(matchedWord);
             } else {
+                // 不正解の場合はミスをカウント
                 misses++;
-                showFeedback('間違い...', 'error');
-                
-                // 1.5秒待機
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // スロットをリセット
-                targetSlots[0].classList.remove('incorrect-slot');
-                targetSlots[1].classList.remove('incorrect-slot');
-                targetSlots[0].textContent = '...';
-                targetSlots[1].textContent = '...';
-                
-                // ピースをpartsAreaに戻す
-                [part1, part2].forEach(p => {
-                    p.element.style.display = 'block';
-                    p.element.classList.remove('slotted');
-                });
-                
-                slottedParts = [null, null];
-                isChecking = false;
-                gameActionButton.disabled = false;
-            }
-        }
-
-
-        // ----------------------------------------------------------------
-        // 7. ゲームロジック (Step 2: 単語と訳のマッチング)
-        // ----------------------------------------------------------------
-
-        let step2Words = [];
-        let step2Translations = [];
-        let selectedWord = null;
-        let selectedTranslation = null;
-
-        function endGame() {
-            isGameActive = false;
-            currentWordIndex = 0;
-            
-            // Step 2 の準備
-            // Step 1 で完成した単語リストを取得
-            step2Words = [];
-            document.querySelectorAll('#completed-words-step1 .completed-word').forEach(element => {
-                step2Words.push({
-                    word: element.dataset.wordId,
-                    translation: element.dataset.translation,
-                    element: element,
-                    isMatched: false
-                });
-            });
-
-            // 訳のリストを作成
-            step2Translations = shuffle(step2Words.map(w => ({
-                translation: w.translation,
-                isMatched: false,
-                element: null // 後でDOM要素を格納
-            })));
-
-
-            // UIの切り替え
-            step1Content.style.display = 'none';
-            step2Section.style.display = 'flex'; // flex-col or flex-row
-            gameActionButton.textContent = 'ホームへ';
-            gameActionButton.onclick = () => setView('home');
-
-            // スコアボードの表示
-            gameScoreBoard.style.display = 'flex';
-            finalMissDisplay.textContent = misses;
-            
-            // マッチングエリアの準備
-            renderStep2Parts();
-        }
-
-
-        function renderStep2Parts() {
-            completedWordsAreaStep2.innerHTML = '';
-            translationArea.innerHTML = '';
-            
-            // 英語単語の描画
-            step2Words.forEach(wordData => {
-                const wordElement = document.createElement('div');
-                wordElement.className = 'completed-word px-4 py-2 bg-yellow-400 text-gray-800 rounded-lg text-xl font-bold hover:bg-yellow-500 cursor-pointer';
-                wordElement.textContent = wordData.word;
-                wordElement.dataset.wordId = wordData.word;
-                wordData.element = wordElement;
-                
-                wordElement.addEventListener('click', () => handleWordClick(wordData));
-                completedWordsAreaStep2.appendChild(wordElement);
-            });
-
-            // 日本語訳の描画
-            step2Translations.forEach(translationData => {
-                const translationElement = document.createElement('div');
-                // w-autoとpx-4を追加し、内容に応じて幅を調整
-                translationElement.className = 'translation-part px-4 py-2 bg-green-500 text-white rounded-lg text-xl font-bold hover:bg-green-600 cursor-pointer whitespace-nowrap';
-                translationElement.textContent = translationData.translation;
-                translationElement.dataset.translation = translationData.translation;
-                translationData.element = translationElement;
-
-                translationElement.addEventListener('click', () => handleTranslationClick(translationData));
-                translationArea.appendChild(translationElement);
-            });
-        }
-        
-        function handleWordClick(wordData) {
-            if (wordData.isMatched) return;
-
-            // 選択状態の切り替え
-            if (selectedWord === wordData) {
-                wordData.element.classList.remove('selected');
-                selectedWord = null;
-            } else {
-                if (selectedWord) selectedWord.element.classList.remove('selected');
-                selectedWord = wordData;
-                wordData.element.classList.add('selected');
-            }
-            
-            checkStep2Match();
-        }
-
-        function handleTranslationClick(translationData) {
-            if (translationData.isMatched) return;
-
-            // 選択状態の切り替え
-            if (selectedTranslation === translationData) {
-                translationData.element.classList.remove('selected');
-                selectedTranslation = null;
-            } else {
-                if (selectedTranslation) selectedTranslation.element.classList.remove('selected');
-                selectedTranslation = translationData;
-                translationData.element.classList.add('selected');
-            }
-            
-            checkStep2Match();
-        }
-        
-        async function checkStep2Match() {
-            if (!selectedWord || !selectedTranslation) return;
-            
-            const currentWord = selectedWord.element;
-            const currentTranslation = selectedTranslation.element;
-
-            isChecking = true; // マッチング中はクリックを無効化
-            
-            if (selectedWord.translation === selectedTranslation.translation) {
-                // 正解
-                showFeedback('マッチング成功！', 'success');
-                step2MatchCount++;
-                
-                // 状態の更新
-                selectedWord.isMatched = true;
-                selectedTranslation.isMatched = true;
-                
-                // UIの更新
-                currentWord.classList.remove('selected', 'bg-yellow-400', 'hover:bg-yellow-500');
-                currentWord.classList.add('bg-green-600');
-                currentTranslation.classList.remove('selected', 'bg-green-500', 'hover:bg-green-600');
-                currentTranslation.classList.add('bg-green-700');
-                
-                // 要素を非表示にする
-                currentWord.style.opacity = '0.5';
-                currentTranslation.style.opacity = '0.5';
-
-                // 最終ペア表示に追加
-                displayFinalPair(selectedWord.word, selectedWord.translation);
-
-                // 1秒待機
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                if (step2MatchCount === questionLimit) {
-                    // 全て完了
-                    showStep2FinalScore();
-                }
-                
-            } else {
-                // 間違い
-                misses++;
+                targetSlots.forEach(slot => slot.classList.add('incorrect-slot'));
                 showFeedback(`間違い！`, 'error');
-                
-                // 一時的に赤くする
-                currentWord.classList.add('incorrect-part-temp');
-                currentTranslation.classList.add('incorrect-part-temp');
-                
-                // 1.5秒待機
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // 元の色に戻す
-                currentWord.classList.remove('incorrect-part-temp');
-                currentTranslation.classList.remove('incorrect-part-temp');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                handleError();
             }
-            
-            currentWord.classList.remove('selected');
-            currentTranslation.classList.remove('selected');
-            selectedWord = null;
-            selectedTranslation = null;
+
             isChecking = false;
         }
 
-        function displayFinalPair(word, translation) {
-             const pairElement = document.createElement('div');
-             pairElement.className = 'p-3 bg-white rounded-lg shadow-md border-l-4 border-indigo-500 flex justify-between items-center';
-             pairElement.innerHTML = `
-                 <p class="text-lg font-bold text-gray-800">${word}</p>
-                 <p class="text-base text-gray-600 ml-4">(${translation})</p>
-             `;
-             finalPairsDisplay.appendChild(pairElement);
+        function handleSuccess(wordData) {
+            completedCount++;
+
+            const div = document.createElement('div');
+            // wordDataはmatchedWordを使用するため、正しいIDが反映される
+            div.className = 'completed-word px-4 py-3 bg-yellow-400 text-gray-800 font-extrabold rounded-xl hover:bg-yellow-500 text-4xl sm:text-5xl shadow-xl w-full border-4 border-transparent';
+            div.textContent = wordData.full;
+            // 完成した単語には、一致した単語のIDを付与する (Step 2で使用)
+            div.dataset.id = wordData.id; 
+            completedWordsAreaStep1.appendChild(div); 
+            
+            // 使用したパーツをDOMから完全に削除
+            slottedParts[0].element.remove();
+            slottedParts[1].element.remove();
+
+            slottedParts = [null, null];
+            updateVisualSlots();
+            
+            if (completedCount === gameWordData.length) {
+                logFeedback("全単語完成！Step 2へ進みます。", 'success');
+                step1Content.style.display = 'none';
+                initializeStep2();
+            }
         }
 
-        function showStep2FinalScore() {
-            const finalScoreMessage = document.createElement('div');
-            finalScoreMessage.className = 'final-message bg-indigo-100 rounded-xl shadow-lg mt-8 border-t-4 border-indigo-500';
-            finalScoreMessage.innerHTML = `
-                <p class="text-3xl font-bold text-indigo-700">お疲れ様でした！ゲームクリア！</p>
-                <p class="text-xl text-gray-700 mt-2">最終ミス回数: <span class="text-4xl text-red-600 font-black">${misses}</span> 回</p>
-                <p class="text-sm text-gray-500 mt-1">目指せミス0回！</p>
-            `;
+        function handleError() {
+            // ミスが発生した場合、スロットのパーツを手札に戻す
+            targetSlots.forEach((slot, index) => {
+                if (slottedParts[index]) {
+                    const part = slottedParts[index];
+                    partsArea.appendChild(part.element);
+                }
+            });
+
+            slottedParts = [null, null];
+            updateVisualSlots();
+        }
+
+        let selectedWord = null;
+        let selectedTranslation = null;
+
+        function initializeStep2() {
+            step2Section.style.display = 'block';
+            gameScoreBoard.style.display = 'none'; 
             finalScoreContainer.innerHTML = '';
-            finalScoreContainer.appendChild(finalScoreMessage);
+            step2PairArea.style.display = 'flex'; // STEP2操作エリアを表示
+            completedWordsAreaStep2.innerHTML = ''; 
+            translationArea.innerHTML = '';
+            finalPairsDisplay.innerHTML = '';
+
+            const wordsToMove = Array.from(completedWordsAreaStep1.children);
             
-            // スクロールで下部が見えるようにする (自動スクロール)
-            setTimeout(() => {
-                gameContainer.scrollTop = gameContainer.scrollHeight;
-            }, 100);
+            shuffle(wordsToMove).forEach(word => {
+                word.addEventListener('click', handleStep2Click);
+                word.className = 'completed-word px-4 py-3 bg-yellow-400 text-gray-800 font-extrabold rounded-xl hover:bg-yellow-500 text-4xl sm:text-5xl shadow-xl w-full border-4 border-transparent';
+                completedWordsAreaStep2.appendChild(word);
+            });
+
+            let translations = gameWordData.map(data => ({ text: data.translation, id: data.id }));
+            shuffle(translations).forEach(trans => {
+                const div = document.createElement('div');
+                div.className = 'translation-part px-4 py-3 bg-green-500 text-white font-extrabold rounded-xl hover:bg-green-600 text-4xl sm:text-5xl shadow-xl w-full border-4 border-transparent';
+                div.textContent = trans.text;
+                div.dataset.id = trans.id;
+                div.addEventListener('click', handleStep2Click);
+                translationArea.appendChild(div);
+            });
+            
+            logFeedback("Step 2開始: 完成した単語と、正しい日本語訳を組み合わせよう！", 'info');
+        }
+
+        function handleStep2Click(event) {
+            if (!isGameActive) return;
+
+            const element = event.target;
+            const isWord = element.classList.contains('completed-word');
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected'); 
+                if (isWord) {
+                    selectedWord = null;
+                } else {
+                    selectedTranslation = null;
+                }
+                return;
+            }
+
+            if (isWord) {
+                if (selectedWord) selectedWord.classList.remove('selected');
+                selectedWord = element;
+                selectedWord.classList.add('selected');
+            } else {
+                if (selectedTranslation) selectedTranslation.classList.remove('selected');
+                selectedTranslation = element;
+                selectedTranslation.classList.add('selected');
+            }
+
+            if (selectedWord && selectedTranslation) {
+                checkTranslationMatch();
+            }
+        }
+
+        async function checkTranslationMatch() {
+            const wordId = parseInt(selectedWord.dataset.id);
+            const translationId = parseInt(selectedTranslation.dataset.id);
+
+            const currentWord = selectedWord;
+            const currentTranslation = selectedTranslation;
+            
+            // Step 2はIDによる判定を維持
+            if (wordId === translationId) {
+                step2MatchCount++;
+                showFeedback(`ペア成立！🎉`, 'success');
+                
+                await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+                const setDiv = document.createElement('div');
+                setDiv.textContent = `${currentWord.textContent} = ${currentTranslation.textContent}`;
+                setDiv.className = 'bg-gray-200 p-4 rounded-lg my-1 font-extrabold text-left text-3xl sm:text-4xl';
+                finalPairsDisplay.appendChild(setDiv);
+
+                currentWord.remove();
+                currentTranslation.remove();
+                
+                if (step2MatchCount === gameWordData.length) {
+                    finalResult(); 
+                }
+            } else {
+                misses++;
+                showFeedback(`間違い！`, 'error');
+                
+                await new Promise(resolve => setTimeout(resolve, 1500)); 
+                
+                currentWord.classList.remove('selected');
+                currentTranslation.classList.remove('selected');
+            }
+            
+            selectedWord = null;
+            selectedTranslation = null;
         }
 
 
@@ -1340,7 +1380,7 @@
         saveThemeButton.addEventListener('click', () => saveTheme(editingTheme));
         backToHomeButton.addEventListener('click', () => setView('home'));
         
-        // NEW: Import List Listeners
+        // Import List Listeners
         importListButton.addEventListener('click', handleImportList);
 
 
