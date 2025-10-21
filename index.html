@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Split Challenge</title>
+    <title>Word Split Challenge - ヨーロッパ地図学習</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* カスタムスタイル */
@@ -30,6 +30,11 @@
             border-width: 4px; 
             border-style: solid; 
             border-color: transparent;
+            /* NEW: text-lg相当のフォントサイズとパディングを適用 */
+            font-size: 1.125rem; /* text-lg相当 */
+            padding: 0.5rem 1rem; /* py-2 px-4 相当 - サイズ調整 */
+            border-radius: 0.5rem; /* rounded-lg 相当 */
+            font-weight: 700; /* 太字 */
         }
         
         /* 選択状態のスタイル */
@@ -74,9 +79,15 @@
             color: #ef4444; /* red-500 */
             margin-left: 0.25rem;
         }
+        
+        /* Step 3: 地図コンテナの最大幅を調整 */
+        #map-container {
+             /* 画面幅に応じて適切に表示されるように最大幅を調整 */
+            max-width: 800px;
+        }
     </style>
 </head>
-<body class="w-screen h-screen overflow-hidden bg-gray-50 text-gray-800 antialiased p-4 sm:p-8 flex items-start justify-center">
+<body class="w-screen h-screen overflow-hidden bg-gray-50 text-gray-800 antialiased p-4 sm:p-8 flex items-start justify-center text-lg">
 
     <div id="game-container" class="w-full h-full mx-auto bg-white p-6 sm:p-10 rounded-3xl shadow-2xl border border-gray-100 flex flex-col space-y-4 max-w-7xl overflow-y-auto">
         
@@ -170,12 +181,13 @@
         </div>
 
         <div id="game-view" style="display: none;">
-
+            
             <div id="step-1-content" class="negative-mt-4">
+                
                 <div id="parts-area" class="puzzle-area flex flex-wrap gap-4 justify-center items-center p-4 bg-gray-50 rounded-xl shadow-inner mb-4">
                     </div>
 
-                <div class="flex flex-col items-center">
+                <div id="step-1-slots" class="flex flex-col items-center">
                     <div id="target-box" class="flex flex-wrap justify-center">
                         <div class="target-slot w-full md:w-64 h-16 sm:h-20 bg-gray-200 rounded-l-xl border-4 border-dashed border-gray-400 border-r-0 flex items-center justify-center text-3xl sm:text-4xl font-extrabold text-gray-700" data-slot="1">...</div>
                         <div class="target-slot w-full md:w-64 h-16 sm:h-20 bg-gray-200 rounded-r-xl border-4 border-dashed border-gray-400 border-l-0 flex items-center justify-center text-3xl sm:text-4xl font-extrabold text-gray-700" data-slot="2">...</div>
@@ -187,10 +199,6 @@
             </div>
 
             <div id="step-2-section" style="display: none;" class="negative-mt-4">
-                
-                <div id="game-score-board" class="final-message flex flex-col justify-around items-center p-6 bg-orange-100 rounded-xl shadow-lg mb-8" style="display: none;">
-                    <p class="text-xl sm:text-2xl font-semibold text-gray-700 pt-3">最終ミス回数: <span id="final-miss-display" class="text-3xl sm:text-4xl text-red-600 font-bold">0</span>回</p>
-                </div>
                 
                 <div id="step2-pair-area" class="flex flex-col md:flex-row gap-4 mb-4">
                     
@@ -208,8 +216,13 @@
                 <div id="final-pairs-display" class="mt-4 flex flex-col space-y-3">
                     </div>
 
-                <div id="final-score-container" class="mt-8"></div>
             </div>
+
+            <div id="game-score-board" class="final-message flex flex-col justify-around items-center p-6 bg-orange-100 rounded-xl shadow-lg mb-8" style="display: none;">
+                <p class="text-xl sm:text-2xl font-semibold text-gray-700 pt-3">最終ミス回数: <span id="final-miss-display" class="text-3xl sm:text-4xl text-red-600 font-bold">0</span>回</p>
+            </div>
+            <div id="final-score-container" class="mt-8"></div>
+
 
             <div id="game-button-wrapper" class="flex justify-center pt-6">
                 <button id="game-action-button" class="px-12 py-5 bg-indigo-600 text-white text-xl sm:text-2xl font-extrabold rounded-full shadow-xl hover:bg-indigo-700 transition duration-150 w-full max-w-sm">
@@ -233,7 +246,7 @@
         const LOCAL_STORAGE_KEY = 'word_split_challenge_themes';
 
         // ----------------------------------------------------------------
-        // NEW: デフォルトテーマデータ群 (中1英単語セット & 歴史人物)
+        // NEW: デフォルトテーマデータ群 (中1英単語セット & 歴史人物 & ヨーロッパ首都)
         // ----------------------------------------------------------------
         
         // 既存の「中1英単語セット」テーマ
@@ -367,13 +380,12 @@
             ]
         };
 
-        // 新しく追加された「歴史人物・用語」テーマ
+        // 既存の「歴史人物・用語」テーマ
         const DEFAULT_THEME_DATA_HISTORY = {
             id: 'default_rekishi_jinbutsu',
             name: '歴史人物・用語',
             createdAt: new Date().toISOString(),
             words: [
-                // 人物名（全角文字）は、中央で自動分割するロジックに基づいてPart1/Part2に分割しています。
                 { part1: '卑', part2: '弥呼', translation: '邪馬台国の女王' },
                 { part1: '聖徳', part2: '太子', translation: '冠位十二階' },
                 { part1: '鑑', part2: '真', translation: '遣唐使船で来日' },
@@ -427,11 +439,97 @@
             ]
         };
 
+        // NEW: ヨーロッパ首都テーマ
+        const DEFAULT_THEME_DATA_CAPITALS = {
+            id: 'default_europe_capitals',
+            name: 'ヨーロッパの首都と国名',
+            createdAt: new Date().toISOString(),
+            words: [
+                { part1: 'ロン', part2: 'ドン', translation: 'イギリス' }, 
+                { part1: 'パ', part2: 'リ', translation: 'フランス' }, 
+                { part1: 'ベル', part2: 'リン', translation: 'ドイツ' }, 
+                { part1: 'ロー', part2: 'マ', translation: 'イタリア' }, 
+                { part1: 'マド', part2: 'リード', translation: 'スペイン' }, 
+                { part1: 'リス', part2: 'ボン', translation: 'ポルトガル' }, 
+                { part1: 'アムステル', part2: 'ダム', translation: 'オランダ' }, 
+                { part1: 'ブリュッ', part2: 'セル', translation: 'ベルギー' }, 
+                { part1: 'ウィー', part2: 'ン', translation: 'オーストリア' }, 
+                { part1: 'ブダ', part2: 'ペスト', translation: 'ハンガリー' }, 
+                { part1: 'ワル', part2: 'シャワ', translation: 'ポーランド' }, 
+                { part1: 'プラ', part2: 'ハ', translation: 'チェコ' }, 
+                { part1: 'コペン', part2: 'ハーゲン', translation: 'デンマーク' }, 
+                { part1: 'オス', part2: 'ロ', translation: 'ノルウェー' }, 
+                { part1: 'ストック', part2: 'ホルム', translation: 'スウェーデン' }, 
+                { part1: 'ヘルシ', part2: 'ンキ', translation: 'フィンランド' }, 
+                { part1: 'ア', part2: 'テネ', translation: 'ギリシャ' }, 
+                { part1: 'ダブ', part2: 'リン', translation: 'アイルランド' }, 
+                { part1: 'レイキャ', part2: 'ビク', translation: 'アイスランド' }, 
+                { part1: 'べ', part2: 'ルン', translation: 'スイス' }, 
+                { part1: 'ルクセン', part2: 'ブルク', translation: 'ルクセンブルク' }, 
+                { part1: 'ザグ', part2: 'レブ', translation: 'クロアチア' }, 
+                { part1: 'ソフィ', part2: 'ア', translation: 'ブルガリア' }, 
+                { part1: 'ブカレ', part2: 'スト', translation: 'ルーマニア' }, 
+                
+                
+                
+            ]
+        };
+
         // 全てのデフォルトテーマを格納する配列
         const ALL_DEFAULT_THEMES = [
             DEFAULT_THEME_DATA_EIGO,
-            DEFAULT_THEME_DATA_HISTORY 
+            DEFAULT_THEME_DATA_HISTORY,
+            DEFAULT_THEME_DATA_CAPITALS // NEW: ヨーロッパの首都を追加
         ];
+
+        // NEW: 地図データと画像パス
+        const EUROPE_MAP_IMAGE_PATH = 'euromap.png'; // あなたの画像ファイル名
+        
+        // euromap.pngの番号と国名の対応表
+        const EUROPE_MAP_ANSWERS = {
+            "アイスランド": 1,
+            "アイルランド": 2,
+            "イギリス": 3,
+            "ノルウェー": 4,
+            "スウェーデン": 5,
+            "フィンランド": 6,
+            "エストニア": 7,
+            "ラトビア": 8,
+            "リトアニア": 9,
+            "ポーランド": 10,
+            "デンマーク": 11,
+            "ドイツ": 12,
+            "オランダ": 13,
+            "ベルギー": 14,
+            "ルクセンブルク": 15, // 13/14/15の間に挟まれた小国
+            "フランス": 16,
+            "スペイン": 17,
+            "ポルトガル": 18,
+            "スイス": 19,
+            "オーストリア": 20,
+            "チェコ": 21,
+            "スロバキア": 22,
+            "ハンガリー": 23,
+            "スロベニア": 24,
+            "イタリア": 25,
+            "ルーマニア": 26,
+            "クロアチア": 27,
+            "ボスニア・ヘルツェゴビナ": 28,
+            "ユーゴスラビア": 29,
+            "ブルガリア": 30,
+            "マケドニア": 31, // 31/32はバルカン半島
+            "アルバニア": 32,
+            "ギリシャ": 33,
+            "リヒテンシュタイン": 34, // 19と25の間
+            "アンドラ": 35, // 16と17の間
+            "サンマリノ": 36, // 36はイタリア半島、サンマリノかバチカン市国などだが、この位置はスロベニアやクロアチア付近の小国かも。ここではイタリア半島付近の小国として扱う。
+            
+        };
+        // 今回のテーマでStep 2までに使用される国名のみを抽出
+        const CAPITAL_COUNTRIES = DEFAULT_THEME_DATA_CAPITALS.words.map(w => w.translation);
+        
+        // 地図の番号の最大値
+        const MAP_MAX_NUMBER = 36; 
 
 
         // ----------------------------------------------------------------
@@ -481,6 +579,7 @@
         const gameScoreBoard = document.getElementById('game-score-board');
         const finalMissDisplay = document.getElementById('final-miss-display');
         const step1Content = document.getElementById('step-1-content');
+        const step1Slots = document.getElementById('step-1-slots'); // NEW: Step 1のスロットコンテナ
         const step2Section = document.getElementById('step-2-section');
         const finalPairsDisplay = document.getElementById('final-pairs-display');
         const step2PairArea = document.getElementById('step2-pair-area'); 
@@ -506,6 +605,12 @@
         let isGameActive = false;
         let isChecking = false; 
         let slottedParts = [null, null]; 
+        
+        // NEW: Step 3 (地図) 状態
+        let step3CountriesToMatch = []; // Step 2で使われた国名の配列
+        let currentMapQuestion = null; // 現在出題中の国名
+        let step3MatchCount = 0;
+        let step3MapData = []; // マッチング対象となる国名と番号のペア
 
 
         // ----------------------------------------------------------------
@@ -734,8 +839,8 @@
         });
 
         function addWordToTheme() {
-            const part1 = inputPart1.value.trim().toUpperCase();
-            const part2 = inputPart2.value.trim().toUpperCase();
+            const part1 = inputPart1.value.trim();
+            const part2 = inputPart2.value.trim();
             const translation = inputTranslation.value.trim();
             
             if (part1 && part2 && translation) {
@@ -783,12 +888,12 @@
                         isValidEntry = true;
                     }
                 } 
-                // 2. 「2項目: ENGLISHWORD, 日本語訳」形式のチェックと自動分割ロジック
+                // 2. 「2項目: FULLWORD, 日本語訳」形式のチェックと自動分割ロジック
                 else if (parts.length === 2) {
                     const [fullWord, trans] = parts;
                     
                     if (fullWord && trans) {
-                        // 文字列を大文字化せず、そのままの文字数で処理
+                        // 文字列をそのままの文字数で処理
                         const word = fullWord.trim();
                         const len = word.length;
                         
@@ -853,6 +958,8 @@
                     div.style.backgroundColor = '#ecfdf5'; // Green-50 for English
                 } else if (theme.id === DEFAULT_THEME_DATA_HISTORY.id) {
                     div.style.backgroundColor = '#fef3c7'; // Yellow-100 for History
+                } else if (theme.id === DEFAULT_THEME_DATA_CAPITALS.id) { // NEW: ヨーロッパの首都
+                    div.style.backgroundColor = '#ebf8ff'; // Blue-50 for Capitals
                 }
                 
                 if (theme.words.length < 5) {
@@ -1011,7 +1118,17 @@
                 // IDはStep 2で使用するために、ここで一意に設定
                 id: index + 1 
             }));
-
+            
+            // NEW: Step 3のための国名リスト作成
+            if (selectedTheme.id === DEFAULT_THEME_DATA_CAPITALS.id) {
+                 step3MapData = gameWordData.map(data => ({
+                    country: data.translation,
+                    number: EUROPE_MAP_ANSWERS[data.translation]
+                })).filter(data => data.number !== undefined); // 地図にない国は除外
+            } else {
+                step3MapData = [];
+            }
+            
             misses = 0;
             completedCount = 0;
             step2MatchCount = 0;
@@ -1049,26 +1166,27 @@
             
             gameActionButton.textContent = 'ホームへ';
         }
-
+        
+        // Step 1 ロジック (変更なし)
         function getPartRole(text) {
-            // 文字列による判定: Part 1 または Part 2 のどちらに使われる単語かを特定する
             for (const data of gameWordData) {
                 if (data.part1 === text) return 1; 
                 if (data.part2 === text) return 2; 
             }
-            return 0; // 見つからない場合 (本来は発生しないはず)
+            return 0;
         }
 
         function initializeStep1() {
-            partsArea.innerHTML = ''; 
+            partsArea.className = 'puzzle-area flex flex-wrap gap-4 justify-center items-center p-4 bg-gray-50 rounded-xl shadow-inner mb-4';
+	    partsArea.innerHTML = ''; 
             completedWordsAreaStep1.innerHTML = '';
             step1Content.style.display = 'block';
-            
+            step1Slots.style.display = 'block'; // Step 1 スロットを表示
+	               
+ 
             let allParts = [];
             
-            // 単語データからパーツを生成
             gameWordData.forEach(data => {
-                // ここでIDではなく、単語データを渡すことで、getPartRoleの判定が厳密になる
                 allParts.push({ text: data.part1, id: data.id, role: getPartRole(data.part1) });
                 allParts.push({ text: data.part2, id: data.id, role: getPartRole(data.part2) });
             });
@@ -1077,7 +1195,6 @@
                 const div = document.createElement('div');
                 div.className = 'word-part px-4 py-3 bg-orange-500 text-white font-extrabold rounded-xl hover:bg-orange-600 text-5xl sm:text-6xl shadow-xl border-4 border-transparent';
                 div.textContent = part.text;
-                // 注意: ここでセットされるIDは、Step 1の結合チェックには使用せず、Step 2の日本語訳チェックにのみ使用
                 div.dataset.id = part.id; 
                 div.dataset.role = part.role; 
                 div.addEventListener('click', handlePartClick);
@@ -1094,11 +1211,11 @@
             const partElement = event.target;
             const partRole = parseInt(partElement.dataset.role); 
             
-            if (partRole === 0) return; // 不正なパーツクリック防止
+            if (partRole === 0) return;
 
             const partData = {
                 text: partElement.textContent,
-                id: parseInt(partElement.dataset.id), // Step 2で使用
+                id: parseInt(partElement.dataset.id),
                 element: partElement,
                 role: partRole
             };
@@ -1115,23 +1232,17 @@
                 slottedParts[slotIndex] = partData;
                 partElement.remove();
             }
-            // スロットが埋まっている状態で、別のピースをクリックした場合 (競合/ミス発生)
+            // スロットが埋まっている状態で、別のピースをクリックした場合 
             else {
-                // **競合時はミスとしてカウントしない (UX向上)**
-
-                // 既にスロットに入っているパーツをインベントリに戻す
                 const existingPartElement = slottedParts[slotIndex].element;
                 partsArea.appendChild(existingPartElement);
                 existingPartElement.classList.remove('selected');
                 
-                // スロットに新しいパーツを配置
                 slottedParts[slotIndex] = partData;
                 partElement.remove();
 
-                // UIを更新
                 updateVisualSlots();
                 
-                // 新しいピースが配置されたため、結合チェックを行う
                 if (slottedParts[0] && slottedParts[1]) {
                     checkCombination();
                 }
@@ -1150,23 +1261,18 @@
             targetSlots.forEach((slot, index) => {
                 const part = slottedParts[index];
                 
-                // スロット内のコンテンツの寄せを変更 (Flexboxのjustify-*を使用)
                 slot.classList.remove('justify-center', 'justify-start', 'justify-end'); 
 
-                // 既存のコンテンツをクリア
                 slot.innerHTML = ''; 
 
                 if (part) {
-                    // Part 1 (index 0) は右寄せ (justify-end)、Part 2 (index 1) は左寄せ (justify-start)
                     slot.classList.add(index === 0 ? 'justify-end' : 'justify-start');
                     
                     const content = document.createElement('span');
                     content.textContent = part.text;
-                    // 単語の連結を視覚的に強調するため、マージンを設定
                     content.className = index === 0 ? 'mr-1' : 'ml-1'; 
                     slot.appendChild(content);
                 } else {
-                    // スロットが空の場合は中央寄せに戻す
                     slot.classList.add('justify-center');
                     
                     const placeholder = document.createElement('span');
@@ -1181,7 +1287,6 @@
             document.querySelectorAll('.word-part').forEach(p => p.classList.remove('selected', 'border-4', 'border-red-500', 'incorrect-part-temp'));
         }
         
-        // **修正箇所**: 文字列による正誤判定ロジック
         async function checkCombination() {
             isChecking = true;
             targetSlots.forEach(slot => slot.classList.remove('correct-slot', 'incorrect-slot'));
@@ -1195,23 +1300,19 @@
                 return;
             }
             
-            // 結合文字列で判定するロジック
             const combinedText = part1.text + part2.text;
             
-            // gameWordData全体から、結合文字列と一致する単語を探す
             const matchedWord = gameWordData.find(data => data.full === combinedText);
             
-            let isCorrect = !!matchedWord; // マッチした単語が見つかれば正解
+            let isCorrect = !!matchedWord;
 
             if (isCorrect) {
                 targetSlots.forEach(slot => slot.classList.add('correct-slot'));
                 showFeedback(`単語完成！`, 'success'); 
                 await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // 正解が見つかった単語データを使って処理を継続 (Step 2のIDも含む)
                 handleSuccess(matchedWord);
             } else {
-                // 不正解の場合はミスをカウント
                 misses++;
                 targetSlots.forEach(slot => slot.classList.add('incorrect-slot'));
                 showFeedback(`間違い！`, 'error');
@@ -1226,14 +1327,11 @@
             completedCount++;
 
             const div = document.createElement('div');
-            // wordDataはmatchedWordを使用するため、正しいIDが反映される
             div.className = 'completed-word px-4 py-3 bg-yellow-400 text-gray-800 font-extrabold rounded-xl hover:bg-yellow-500 text-4xl sm:text-5xl shadow-xl w-full border-4 border-transparent';
             div.textContent = wordData.full;
-            // 完成した単語には、一致した単語のIDを付与する (Step 2で使用)
             div.dataset.id = wordData.id; 
             completedWordsAreaStep1.appendChild(div); 
             
-            // 使用したパーツをDOMから完全に削除
             slottedParts[0].element.remove();
             slottedParts[1].element.remove();
 
@@ -1248,7 +1346,6 @@
         }
 
         function handleError() {
-            // ミスが発生した場合、スロットのパーツを手札に戻す
             targetSlots.forEach((slot, index) => {
                 if (slottedParts[index]) {
                     const part = slottedParts[index];
@@ -1267,7 +1364,7 @@
             step2Section.style.display = 'block';
             gameScoreBoard.style.display = 'none'; 
             finalScoreContainer.innerHTML = '';
-            step2PairArea.style.display = 'flex'; // STEP2操作エリアを表示
+            step2PairArea.style.display = 'flex';
             completedWordsAreaStep2.innerHTML = ''; 
             translationArea.innerHTML = '';
             finalPairsDisplay.innerHTML = '';
@@ -1331,7 +1428,6 @@
             const currentWord = selectedWord;
             const currentTranslation = selectedTranslation;
             
-            // Step 2はIDによる判定を維持
             if (wordId === translationId) {
                 step2MatchCount++;
                 showFeedback(`ペア成立！🎉`, 'success');
@@ -1347,7 +1443,16 @@
                 currentTranslation.remove();
                 
                 if (step2MatchCount === gameWordData.length) {
-                    finalResult(); 
+                    logFeedback("Step 2全問クリア！Step 3へ進みます。", 'success');
+                    step2Section.style.display = 'none';
+                    
+                    // NEW: Step 3の条件分岐
+                    if (selectedTheme.id === DEFAULT_THEME_DATA_CAPITALS.id && step3MapData.length > 0) {
+                         initializeStep3();
+                    } else {
+                        // 地図テーマでない、またはデータがない場合は最終結果へ
+                        finalResult(); 
+                    }
                 }
             } else {
                 misses++;
@@ -1363,6 +1468,118 @@
             selectedTranslation = null;
         }
 
+        // ----------------------------------------------------------------
+        // NEW: Step 3 (地図マッチング) 制御
+        // ----------------------------------------------------------------
+
+        function initializeStep3() {
+            step3MatchCount = 0;
+            step3CountriesToMatch = shuffle([...step3MapData]); // マッチング対象の国をシャッフル
+            step1Content.style.display = 'block'; // Step 3のUIをStep 1のコンテナに表示
+            step1Slots.style.display = 'none'; // Step 1のスロットは非表示
+            
+            // partsAreaを地図コンテナとして使用
+            partsArea.className = 'flex flex-col gap-4 justify-center items-center p-4 bg-gray-50 rounded-xl shadow-inner mb-4';
+            partsArea.innerHTML = `
+                <div id="map-container" class="w-full max-w-lg mx-auto p-4 flex flex-col items-center">
+                    <h2 class="text-3xl font-bold text-indigo-700 mb-4 text-center">Step 3: 地図上の位置と国名をマッチング！</h2>
+                    <img id="europe-map-display" src="${EUROPE_MAP_IMAGE_PATH}" alt="ヨーロッパ番号付き地図" class="w-full h-auto rounded-lg shadow-lg mb-4 border-4 border-gray-300">
+                    <div id="map-question-area" class="text-xl font-bold text-gray-700 text-center mb-4">...</div>
+                    <div id="map-options-area" class="flex flex-wrap justify-center gap-3">
+                        </div>
+                </div>
+            `;
+            
+            logFeedback("Step 3開始: 地図マッチング", 'info');
+            askMapQuestion();
+        }
+
+        function askMapQuestion() {
+            if (step3CountriesToMatch.length === 0) {
+                // Step 3全問終了
+                finalResult(); 
+                return;
+            }
+
+            const currentData = step3CountriesToMatch.shift();
+            currentMapQuestion = currentData.country; // 例: フランス
+            const mapQuestionArea = document.getElementById('map-question-area');
+            
+            mapQuestionArea.textContent = `「${currentMapQuestion}」は地図上のどの番号ですか？`;
+
+            generateMapOptions(currentData.number); 
+        }
+
+        function generateMapOptions(correctNumber) {
+            const optionsArea = document.getElementById('map-options-area');
+            optionsArea.innerHTML = '';
+            
+            // 正解と、間違いの選択肢をランダムに選ぶ
+            let options = new Set([correctNumber]);
+            
+            while (options.size < 4) { // 4つの選択肢を作成
+                // 地図の番号の最大値(36)を考慮
+                const randomNum = Math.floor(Math.random() * MAP_MAX_NUMBER) + 1; 
+                
+                // 既に正解や選択肢に含まれていない、かつ出題範囲の国番号であるか（オプション）
+                options.add(randomNum);
+            }
+            
+            // 選択肢をシャッフル
+            let optionsArray = Array.from(options);
+            shuffle(optionsArray).forEach(number => {
+                const button = document.createElement('button');
+                button.className = 'px-5 py-3 bg-indigo-500 text-white font-bold rounded-xl hover:bg-indigo-600 shadow-md text-2xl w-24 sm:w-28 transition-colors duration-200';
+                button.textContent = number;
+                button.dataset.number = number;
+                button.addEventListener('click', handleMapOptionClick);
+                optionsArea.appendChild(button);
+            });
+        }
+
+        async function handleMapOptionClick(event) {
+            if (isChecking) return;
+            isChecking = true;
+            
+            const selectedButton = event.target; // 選択したボタンを
+            const selectedNumber = parseInt(selectedButton.dataset.number);
+            const correctNumber = EUROPE_MAP_ANSWERS[currentMapQuestion];
+            const buttons = document.querySelectorAll('#map-options-area button');
+
+            // 一時的に全てのボタンのクリックを無効化
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selectedNumber === correctNumber) {
+                // --- 正解の場合 ---
+                step3MatchCount++;
+                showFeedback(`正解！🎉`, 'success');
+                selectedButton.classList.add('bg-green-600', 'hover:bg-green-600');
+                await new Promise(resolve => setTimeout(resolve, 1500)); 
+                
+                // 次の問題へ
+                isChecking = false;
+                askMapQuestion(); // ✅ 正解した場合のみ次の問題へ進む
+
+            } else {
+                // --- 不正解の場合 ---
+                misses++;
+                showFeedback(`間違い！もう一度選んでね❌`, 'error');
+                selectedButton.classList.add('bg-red-600', 'hover:bg-red-600');
+                
+                // (正解のハイライトは削除)
+                
+                await new Promise(resolve => setTimeout(resolve, 2000)); 
+
+                // ❌ 次の問題に進まず、ボタンをリセットして再挑戦させる
+                selectedButton.classList.remove('bg-red-600', 'hover:bg-red-600'); // 赤色を戻す
+                buttons.forEach(btn => btn.disabled = false); // 全てのボタンを再度有効化
+                
+                isChecking = false;
+                // askMapQuestion(); // ここでは呼び出さない
+            }
+        }
+            
+   
 
         // ----------------------------------------------------------------
         // 8. イベントリスナーと初期化
