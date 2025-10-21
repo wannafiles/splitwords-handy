@@ -399,7 +399,7 @@
                 { part1: '清少', part2: '納言', translation: '枕草子' },
                 { part1: '紀', part2: '貫之', translation: '古今和歌集の選者' },
                 { part1: '平', part2: '清盛', translation: '太政大臣・武士で政治の実権' },
-                { part1: '源', part2: '頼朝', translation: '征夷大将軍・鎌倉幕府を開いた' },
+                { part1: '源', part2: '頼朝', translation: '征夷大D将軍・鎌倉幕府を開いた' },
                 { part1: '後鳥', part2: '羽上皇', translation: '承久の乱で敗れ、隠岐に流された' },
                 { part1: '北条', part2: '泰時', translation: '御成敗式目' },
                 { part1: '後醍', part2: '醐天皇', translation: '建武の新政' },
@@ -665,7 +665,7 @@
             
             setTimeout(() => {
                 feedbackOverlay.classList.add('opacity-0', 'pointer-events-none');
-            }, 1500);
+            }, 800); // 👈 [修正] 1500 から 800 に変更
         }
 
         function shuffle(array) {
@@ -1290,7 +1290,7 @@
         async function checkCombination() {
             isChecking = true;
             targetSlots.forEach(slot => slot.classList.remove('correct-slot', 'incorrect-slot'));
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 100)); // 👈 [修正] 500 から 800 に変更
 
             const part1 = slottedParts[0]; 
             const part2 = slottedParts[1]; 
@@ -1309,14 +1309,14 @@
             if (isCorrect) {
                 targetSlots.forEach(slot => slot.classList.add('correct-slot'));
                 showFeedback(`単語完成！`, 'success'); 
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 800)); // 👈 [修正] 500 から 800 に変更
                 
                 handleSuccess(matchedWord);
             } else {
                 misses++;
                 targetSlots.forEach(slot => slot.classList.add('incorrect-slot'));
                 showFeedback(`間違い！`, 'error');
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 800)); // 👈 [修正] 500 から 800 に変更
                 handleError();
             }
 
@@ -1432,7 +1432,7 @@
                 step2MatchCount++;
                 showFeedback(`ペア成立！🎉`, 'success');
                 
-                await new Promise(resolve => setTimeout(resolve, 1500)); 
+                await new Promise(resolve => setTimeout(resolve, 800)); // 👈 [修正] 1500 から 800 に変更
 
                 const setDiv = document.createElement('div');
                 setDiv.textContent = `${currentWord.textContent} = ${currentTranslation.textContent}`;
@@ -1458,7 +1458,7 @@
                 misses++;
                 showFeedback(`間違い！`, 'error');
                 
-                await new Promise(resolve => setTimeout(resolve, 1500)); 
+                await new Promise(resolve => setTimeout(resolve, 800)); // 👈 [修正] 1500 から 800 に変更
                 
                 currentWord.classList.remove('selected');
                 currentTranslation.classList.remove('selected');
@@ -1554,7 +1554,7 @@
                 step3MatchCount++;
                 showFeedback(`正解！🎉`, 'success');
                 selectedButton.classList.add('bg-green-600', 'hover:bg-green-600');
-                await new Promise(resolve => setTimeout(resolve, 1500)); 
+                await new Promise(resolve => setTimeout(resolve, 800)); // 👈 [修正] 1500 から 800 に変更
                 
                 // 次の問題へ
                 isChecking = false;
@@ -1568,7 +1568,7 @@
                 
                 // (正解のハイライトは削除)
                 
-                await new Promise(resolve => setTimeout(resolve, 2000)); 
+                await new Promise(resolve => setTimeout(resolve, 800)); // 👈 [修正] 2000 から 800 に変更
 
                 // ❌ 次の問題に進まず、ボタンをリセットして再挑戦させる
                 selectedButton.classList.remove('bg-red-600', 'hover:bg-red-600'); // 赤色を戻す
